@@ -3,8 +3,12 @@
 #include <vector>
 #include <iostream>
 #include <Debuging/Validation.h>
+VkInstance Instance::GetInstance() const
+{
+    return m_Instance;
+}
 
-void Instance::CreateInstance()
+void Instance::CreateInstance(const EngWindow& Window)
 {
     if (m_Validation.GetValidationLayersEnabled() && m_Validation.CheckValidationLayerSupport() == false)
     {
@@ -49,10 +53,26 @@ void Instance::CreateInstance()
     }
 
     m_Validation.SetupDebugMessenger(m_Instance);
+    m_surface.CreateSurface(Window.GetWindow(), m_Instance);
+    m_PhysicalDevice.PickPhysicalDevice(m_Instance, m_surface.GetSurface());
+    m_LogicalDevice.CreateLogicalDevice(m_PhysicalDevice, m_Validation);
+    CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_surface.GetSurface(), Window.GetResolution(), m_LogicalDevice);
+    m_SwapChain.CreateSwapChain(swapChainParams);
+    CreateImageViewsParams imageViewsParams(m_SwapChain.GetSwapChainImages(), m_SwapChain.GetSwapChainImageFormat(), m_LogicalDevice.GetLogicalDevice());
+    m_ImageViews.CreateImageViews(imageViewsParams);
+    m_RenderPass.CreateRenderPass(m_SwapChain.GetSwapChainImageFormat(), m_LogicalDevice.GetLogicalDevice());
+    CreateGraphicsPipelineParams graphicalPipelineParams(m_LogicalDevice.GetLogicalDevice(), m_SwapChain.GetSwapChainExtent(), m_RenderPass.GetRenderPass());
+    m_GraphicPipeline.CreateGraphicsPipeline(graphicalPipelineParams);
 }
 
 void Instance::Release()
 {
+    m_GraphicPipeline.Release(m_LogicalDevice.GetLogicalDevice());
+    m_RenderPass.Release(m_LogicalDevice.GetLogicalDevice());
+    m_ImageViews.Release(m_LogicalDevice.GetLogicalDevice());
+    m_SwapChain.Release(m_LogicalDevice.GetLogicalDevice());
+    m_LogicalDevice.Release();
     m_Validation.Release(m_Instance);
+    m_surface.Release(m_Instance);
     vkDestroyInstance(m_Instance, nullptr);
 }

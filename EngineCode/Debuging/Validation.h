@@ -7,8 +7,8 @@ class Validation
 public:
 	void SetupDebugMessenger(const VkInstance instance);
 	bool CheckValidationLayerSupport();
-	bool GetValidationLayersEnabled();
-	const std::vector<const char*>& GetValidationLayers();
+	const bool GetValidationLayersEnabled() const;
+	const std::vector<const char*>& GetValidationLayers() const;
 	std::vector<const char*> GetRequiredExtensions();
 	void Release(const VkInstance instance);
 	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);

@@ -6,6 +6,7 @@
 #include <TypeDefs/TypeDefs.h>
 #include <Window/Window.h>
 #include <Instance/Instance.h>
+#include <SwapChain/SwapChain.h>
 class Engine
 {
 public:
@@ -17,7 +18,6 @@ private:
 	void MainLoop();
 	void CleanUp();
 private:
-	Window m_window;
+	EngWindow m_window;
 	Instance m_Instance;
-
 };

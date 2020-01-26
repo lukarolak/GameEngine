@@ -2,30 +2,39 @@
 #include <Debuging/Assert.h>
 #include <TypeDefs/TypeDefs.h>
 
-Window::Window()
+EngWindow::EngWindow()
 	: m_Window(nullptr)
 {
+	m_Resolution.SetResolution(800, 600);
 }
-void Window::InitWindow()
+void EngWindow::InitWindow()
 {
 	glfwInit();
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	
-	const engIntU32 WIDTH = 800;
-	const engIntU32 HEIGHT = 600;
-	
-	m_Window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+	m_Window = glfwCreateWindow(m_Resolution.GetWidth(), m_Resolution.GetHeight(), "Vulkan", nullptr, nullptr);
 }
 
-int Window::GetShouldClose()
+int EngWindow::GetShouldClose()
 {
 	ENG_ASSERT(m_Window);
 	return glfwWindowShouldClose(m_Window);
 }
 
-void Window::Release()
+GLFWwindow* EngWindow::GetWindow() const
+{
+	ENG_ASSERT(m_Window, "Trying to GetWindow before window is initialized");
+	return m_Window;
+}
+
+const WindowResolution& EngWindow::GetResolution() const
+{
+	return m_Resolution;
+}
+
+void EngWindow::Release()
 {
 	ENG_ASSERT(m_Window);
 	glfwDestroyWindow(m_Window);

@@ -10,7 +10,7 @@ void Engine::Run()
 
 void Engine::InitVulkan()
 {
-	m_Instance.CreateInstance();
+	m_Instance.CreateInstance(m_window);
 }
 
 void Engine::MainLoop()

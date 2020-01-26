@@ -49,7 +49,7 @@ bool Validation::CheckValidationLayerSupport()
     return true;
 }
 
-bool Validation::GetValidationLayersEnabled()
+const bool Validation::GetValidationLayersEnabled() const
 {
 #ifdef NDEBUG
     return false;
@@ -58,7 +58,7 @@ bool Validation::GetValidationLayersEnabled()
 #endif
 }
 
-const std::vector<const char*>& Validation::GetValidationLayers()
+const std::vector<const char*>& Validation::GetValidationLayers() const
 {
     return m_ValidationLayers;
 }
