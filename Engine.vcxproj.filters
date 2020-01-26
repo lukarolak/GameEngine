@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="EngineCode\Debuging\Validation.cpp">
+      <Filter>Debuging</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineCode\Engine.cpp" />
+    <ClCompile Include="EngineCode\Instance\Instance.cpp">
+      <Filter>Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineCode\main.cpp" />
+    <ClCompile Include="EngineCode\ValidationLayers.cpp" />
+    <ClCompile Include="EngineCode\Window\Window.cpp">
+      <Filter>Window</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EngineCode\Debuging\Assert.h">
+      <Filter>Debuging</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineCode\Debuging\Validation.h">
+      <Filter>Debuging</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineCode\Engine.h" />
+    <ClInclude Include="EngineCode\Instance\Instance.h">
+      <Filter>Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineCode\TypeDefs\TypeDefs.h">
+      <Filter>TypeDefs</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineCode\ValidationLayers.h" />
+    <ClInclude Include="EngineCode\Window\Window.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Debuging">
+      <UniqueIdentifier>{37339a6a-147b-9aa0-68d3-b916314f0c55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Instance">
+      <UniqueIdentifier>{1c7ca1d9-8e9e-86f6-6e4d-beef41c741b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TypeDefs">
+      <UniqueIdentifier>{7348e97d-d9c2-b4d1-a27c-637742948a01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{a38696c8-d287-2bb1-3c72-9ce35a0bcb5b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
