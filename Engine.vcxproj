@@ -246,8 +246,7 @@
       </BaseAddress>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib;$(ProjectDir)\Libraries\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemGroup>
+  </ItemDefinitionGroup><ItemGroup>
     <ClInclude Include="EngineCode\Debuging\Assert.h" />
     <ClInclude Include="EngineCode\Debuging\Validation.h" />
     <ClInclude Include="EngineCode\Engine.h" />
