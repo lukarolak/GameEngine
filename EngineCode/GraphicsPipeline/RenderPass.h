@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
-class RenderPass
+class CRenderPass
 {
 public:
 	void CreateRenderPass(const VkFormat& SwapChainImageFormat, const VkDevice& LogicalDevice);

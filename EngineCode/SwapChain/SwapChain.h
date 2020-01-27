@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
 #include <SwapChain/CreateSwapChainParams.h>
-class SwapChain
+class CSwapChain
 {
 public:
 	void CreateSwapChain(const CreateSwapChainParams& Params);

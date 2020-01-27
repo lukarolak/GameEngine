@@ -6,15 +6,15 @@ class CreateSwapChainParams
 {
 public:
 	CreateSwapChainParams(
-	const PhysicalDevice& PhysicalDevice,
+	const CPhysicalDevice& PhysicalDevice,
 	const VkSurfaceKHR& Surface,
 	const WindowResolution& Resolution,
-	const LogicalDevice& LogicalDevice
+	const CLogicalDevice& LogicalDevice
 	);
 
 public:
-	const PhysicalDevice& m_PhysicalDevice;
+	const CPhysicalDevice& m_PhysicalDevice;
 	const VkSurfaceKHR& m_Surface;
 	const WindowResolution& m_Resolution;
-	const LogicalDevice& m_LogicalDevice;
+	const CLogicalDevice& m_LogicalDevice;
 };

@@ -2,9 +2,9 @@
 #include <TypeDefs/TypeDefs.h>
 #include <stdexcept>
 
-void ImageViews::CreateImageViews(const CreateImageViewsParams& Params)
+void CImageViews::CreateImageViews(const CreateImageViewsParams& Params)
 {
-	swapChainImageViews.resize(Params.m_Images.size());
+	m_SwapChainImageViews.resize(Params.m_Images.size());
 
 	for (size_t i = 0; i < Params.m_Images.size(); i++)
 	{
@@ -26,17 +26,22 @@ void ImageViews::CreateImageViews(const CreateImageViewsParams& Params)
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		if (vkCreateImageView(Params.m_LogicalDevice, &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS)
+		if (vkCreateImageView(Params.m_LogicalDevice, &createInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create image views!");
 		}
 	}
 }
 
-void ImageViews::Release(const VkDevice& LogicalDevice)
+void CImageViews::Release(const VkDevice& LogicalDevice)
 {
-	for (auto imageView : swapChainImageViews) 
+	for (auto imageView : m_SwapChainImageViews) 
 	{
 		vkDestroyImageView(LogicalDevice, imageView, nullptr);
 	}
+}
+
+const std::vector<VkImageView>& CImageViews::GetSwapChainImageViews() const
+{
+	return m_SwapChainImageViews;
 }

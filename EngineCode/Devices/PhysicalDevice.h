@@ -3,7 +3,7 @@
 #include <TypeDefs/TypeDefs.h>
 #include <Queues/QueueFamilyIndices.h>
 #include <vector>
-class PhysicalDevice
+class CPhysicalDevice
 {
 public:
 	void PickPhysicalDevice(VkInstance Instance, const VkSurfaceKHR& Surface);

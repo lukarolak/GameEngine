@@ -11,6 +11,7 @@ void Engine::Run()
 void Engine::InitVulkan()
 {
 	m_Instance.CreateInstance(m_window);
+	m_CommandBuffer.CreateCommandBuffers(m_Instance);
 }
 
 void Engine::MainLoop()

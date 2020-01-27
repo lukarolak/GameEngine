@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <set>
 
-void LogicalDevice::CreateLogicalDevice(const PhysicalDevice& PhysicalDevice, const Validation& ValidationLayers)
+void CLogicalDevice::CreateLogicalDevice(const CPhysicalDevice& PhysicalDevice, const CValidation& ValidationLayers)
 {
 	QueueFamilyIndices indices = PhysicalDevice.GetQueueFamilyIndices();
 
@@ -51,12 +51,12 @@ void LogicalDevice::CreateLogicalDevice(const PhysicalDevice& PhysicalDevice, co
 	vkGetDeviceQueue(m_Device, indices.GetPresentFamily().value(), 0, &m_PresentQueue);
 }
 
-void LogicalDevice::Release()
+void CLogicalDevice::Release()
 {
 	vkDestroyDevice(m_Device, nullptr);
 }
 
-const VkDevice LogicalDevice::GetLogicalDevice() const
+const VkDevice CLogicalDevice::GetLogicalDevice() const
 {
 	return m_Device;
 }

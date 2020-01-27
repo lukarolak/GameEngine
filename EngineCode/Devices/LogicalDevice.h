@@ -2,10 +2,10 @@
 #include <vulkan/vulkan_core.h>
 #include <Devices/PhysicalDevice.h>
 #include <Debuging/Validation.h>
-class LogicalDevice
+class CLogicalDevice
 {
 public:
-	void CreateLogicalDevice(const PhysicalDevice& PhysicalDevice, const Validation& ValidationLayers);
+	void CreateLogicalDevice(const CPhysicalDevice& PhysicalDevice, const CValidation& ValidationLayers);
 	void Release();
 	const VkDevice GetLogicalDevice() const;
 private:

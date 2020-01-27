@@ -6,7 +6,7 @@
 #include <set>
 #include <SwapChain/SwapChainSupportDetails.h>
 
-void PhysicalDevice::PickPhysicalDevice(VkInstance Instance, const VkSurfaceKHR& Surface)
+void CPhysicalDevice::PickPhysicalDevice(VkInstance Instance, const VkSurfaceKHR& Surface)
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(Instance, &deviceCount, nullptr);
@@ -40,22 +40,22 @@ void PhysicalDevice::PickPhysicalDevice(VkInstance Instance, const VkSurfaceKHR&
 	m_QueueFamilyIndices.InitQueueFamilyIndices(m_PhysicalDevice, Surface);
 }
 
-const QueueFamilyIndices& PhysicalDevice::GetQueueFamilyIndices() const
+const QueueFamilyIndices& CPhysicalDevice::GetQueueFamilyIndices() const
 {
 	return m_QueueFamilyIndices;
 }
 
-VkPhysicalDevice PhysicalDevice::GetPhysicalDevice() const
+VkPhysicalDevice CPhysicalDevice::GetPhysicalDevice() const
 {
 	return m_PhysicalDevice;
 }
 
-const std::vector<const char*>& PhysicalDevice::GetDeviceExtentions() const
+const std::vector<const char*>& CPhysicalDevice::GetDeviceExtentions() const
 {
 	return m_DeviceExtensions;
 }
 
-bool PhysicalDevice::IsDeviceSuitable(VkPhysicalDevice Device, const VkSurfaceKHR& Surface)
+bool CPhysicalDevice::IsDeviceSuitable(VkPhysicalDevice Device, const VkSurfaceKHR& Surface)
 {
 	QueueFamilyIndices indices;
 	indices.InitQueueFamilyIndices(Device, Surface);
@@ -72,7 +72,7 @@ bool PhysicalDevice::IsDeviceSuitable(VkPhysicalDevice Device, const VkSurfaceKH
 	return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }
 
-bool PhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice Device)
+bool CPhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice Device)
 {
 	uint32_t extensionCount;
 	vkEnumerateDeviceExtensionProperties(Device, nullptr, &extensionCount, nullptr);

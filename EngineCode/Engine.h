@@ -6,7 +6,7 @@
 #include <TypeDefs/TypeDefs.h>
 #include <Window/Window.h>
 #include <Instance/Instance.h>
-#include <SwapChain/SwapChain.h>
+#include <GraphicsPipeline/CommandBuffer.h>
 class Engine
 {
 public:
@@ -17,7 +17,9 @@ private:
 	void InitVulkan();
 	void MainLoop();
 	void CleanUp();
+	void DrawFrame();
 private:
 	EngWindow m_window;
-	Instance m_Instance;
+	CInstance m_Instance;
+	CCommandBuffer m_CommandBuffer;
 };

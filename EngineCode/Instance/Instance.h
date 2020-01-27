@@ -10,20 +10,31 @@
 #include <ImageView/ImageViews.h>
 #include <GraphicsPipeline/GraphicsPipeline.h>
 #include <GraphicsPipeline/RenderPass.h>
-class Instance
+#include <GraphicsPipeline/FrameBuffer.h>
+#include <GraphicsPipeline/CommandPool.h>
+class CInstance
 {
 public:
 	VkInstance GetInstance() const;
 	void CreateInstance(const EngWindow& Window);
 	void Release();
+	const CGraphicsPipeline& GetGraphicsPipeline() const;
+	const CSwapChain& GetSwapChain() const;
+	const CRenderPass& GetRenderPass() const;
+	const CLogicalDevice& GetLogicalDevice() const;
+	const CPhysicalDevice& GetPhysicalDevice() const;
+	const CFrameBuffer& GetFrameBuffer() const;
+	const CCommandPool& GetCommandPool() const;
 private:
 	VkInstance m_Instance;
-	Validation m_Validation;
-	PhysicalDevice m_PhysicalDevice;
-	LogicalDevice m_LogicalDevice;
-	WindowSurface m_surface;
-	SwapChain m_SwapChain;
-	ImageViews m_ImageViews;
-	GraphicsPipeline m_GraphicPipeline;
-	RenderPass m_RenderPass;
+	CValidation m_Validation;
+	CPhysicalDevice m_PhysicalDevice;
+	CLogicalDevice m_LogicalDevice;
+	CWindowSurface m_surface;
+	CSwapChain m_SwapChain;
+	CImageViews m_ImageViews;
+	CGraphicsPipeline m_GraphicPipeline;
+	CRenderPass m_RenderPass;
+	CFrameBuffer m_FrameBuffer;
+	CCommandPool m_CommandPool;
 };

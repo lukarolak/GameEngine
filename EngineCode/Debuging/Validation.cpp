@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-void Validation::SetupDebugMessenger(const VkInstance instance)
+void CValidation::SetupDebugMessenger(const VkInstance instance)
 {
     if (GetValidationLayersEnabled() == false)
     {
@@ -19,7 +19,7 @@ void Validation::SetupDebugMessenger(const VkInstance instance)
     }
 }
 
-bool Validation::CheckValidationLayerSupport()
+bool CValidation::CheckValidationLayerSupport()
 {
     engIntU32 layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -49,7 +49,7 @@ bool Validation::CheckValidationLayerSupport()
     return true;
 }
 
-const bool Validation::GetValidationLayersEnabled() const
+const bool CValidation::GetValidationLayersEnabled() const
 {
 #ifdef NDEBUG
     return false;
@@ -58,12 +58,12 @@ const bool Validation::GetValidationLayersEnabled() const
 #endif
 }
 
-const std::vector<const char*>& Validation::GetValidationLayers() const
+const std::vector<const char*>& CValidation::GetValidationLayers() const
 {
     return m_ValidationLayers;
 }
 
-std::vector<const char*> Validation::GetRequiredExtensions()
+std::vector<const char*> CValidation::GetRequiredExtensions()
 {
     engIntU32 glfwExtensionCount = 0;
     const char** glfwExtensions;
@@ -71,7 +71,7 @@ std::vector<const char*> Validation::GetRequiredExtensions()
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-    if (Validation::GetValidationLayersEnabled()) 
+    if (CValidation::GetValidationLayersEnabled()) 
     {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
@@ -79,7 +79,7 @@ std::vector<const char*> Validation::GetRequiredExtensions()
     return extensions;
 }
 
-void Validation::Release(const VkInstance instance)
+void CValidation::Release(const VkInstance instance)
 {
     if (GetValidationLayersEnabled()) 
     {
@@ -87,14 +87,14 @@ void Validation::Release(const VkInstance instance)
     }
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL Validation::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+VKAPI_ATTR VkBool32 VKAPI_CALL CValidation::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
     std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;
 }
 
-VkResult Validation::CreateDebugUtilsMessengerEXT(const VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+VkResult CValidation::CreateDebugUtilsMessengerEXT(const VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr) 
@@ -107,7 +107,7 @@ VkResult Validation::CreateDebugUtilsMessengerEXT(const VkInstance instance, con
     }
 }
 
-void Validation::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
+void CValidation::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
 {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr) 
@@ -116,7 +116,7 @@ void Validation::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtils
     }
 }
 
-void Validation::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+void CValidation::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;

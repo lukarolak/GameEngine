@@ -1,6 +1,6 @@
 #include "RenderPass.h"
 #include <stdexcept>
-void RenderPass::CreateRenderPass(const VkFormat& SwapChainImageFormat, const VkDevice& LogicalDevice)
+void CRenderPass::CreateRenderPass(const VkFormat& SwapChainImageFormat, const VkDevice& LogicalDevice)
 {
     VkAttachmentDescription colorAttachment = {};
     colorAttachment.format = SwapChainImageFormat;
@@ -34,12 +34,12 @@ void RenderPass::CreateRenderPass(const VkFormat& SwapChainImageFormat, const Vk
     }
 }
 
-void RenderPass::Release(const VkDevice& LogicalDevice)
+void CRenderPass::Release(const VkDevice& LogicalDevice)
 {
     vkDestroyRenderPass(LogicalDevice, m_RenderPass, nullptr);
 }
 
-const VkRenderPass& RenderPass::GetRenderPass() const
+const VkRenderPass& CRenderPass::GetRenderPass() const
 {
     return m_RenderPass;
 }

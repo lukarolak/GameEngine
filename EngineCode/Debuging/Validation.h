@@ -2,7 +2,7 @@
 #include <vector>
 #include <TypeDefs/TypeDefs.h>
 #include <vulkan/vulkan_core.h>
-class Validation
+class CValidation
 {
 public:
 	void SetupDebugMessenger(const VkInstance instance);

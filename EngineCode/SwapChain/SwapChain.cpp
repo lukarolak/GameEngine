@@ -2,7 +2,7 @@
 #include <SwapChain/SwapChainSupportDetails.h>
 #include <Queues/QueueFamilyIndices.h>
 #include <stdexcept>
-void SwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
+void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
 {
     SwapChainSupportDetails swapChainSupport;
     swapChainSupport.InitSwapChainSupportDetails(Params.m_PhysicalDevice.GetPhysicalDevice(), Params.m_Surface);
@@ -62,22 +62,22 @@ void SwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
     swapChainExtent = extent;
 }
 
-void SwapChain::Release(const VkDevice& device)
+void CSwapChain::Release(const VkDevice& device)
 {
     vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
-const std::vector<VkImage>& SwapChain::GetSwapChainImages() const
+const std::vector<VkImage>& CSwapChain::GetSwapChainImages() const
 {
     return swapChainImages;
 }
 
-const VkFormat& SwapChain::GetSwapChainImageFormat() const
+const VkFormat& CSwapChain::GetSwapChainImageFormat() const
 {
     return swapChainImageFormat;
 }
 
-const VkExtent2D& SwapChain::GetSwapChainExtent() const
+const VkExtent2D& CSwapChain::GetSwapChainExtent() const
 {
     return swapChainExtent;
 }

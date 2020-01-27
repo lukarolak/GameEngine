@@ -1,7 +1,7 @@
 #include "GraphicsPipeline.h"
 #include <FileIO/FileIO.h>
 #include <stdexcept>
-void GraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParams& Params)
+void CGraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParams& Params)
 {
     std::vector<char> vertShaderCode = FileIO::ReadFile("shaders/vert.spv");
     std::vector<char> fragShaderCode = FileIO::ReadFile("shaders/frag.spv");
@@ -119,13 +119,18 @@ void GraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParams
     vkDestroyShaderModule(Params.m_LogicalDevice, vertShaderModule, nullptr);
 }
 
-void GraphicsPipeline::Release(const VkDevice& LogicalDevice)
+void CGraphicsPipeline::Release(const VkDevice& LogicalDevice)
 {
     vkDestroyPipeline(LogicalDevice, m_GraphicsPipeline, nullptr);
     vkDestroyPipelineLayout(LogicalDevice, m_PipelineLayout, nullptr);
 }
 
-VkShaderModule GraphicsPipeline::CreateShaderModule(const std::vector<char>& code, const VkDevice& LogicalDevice)
+const VkPipeline& CGraphicsPipeline::GetGraphicsPipeline() const
+{
+    return m_GraphicsPipeline;
+}
+
+VkShaderModule CGraphicsPipeline::CreateShaderModule(const std::vector<char>& code, const VkDevice& LogicalDevice)
 {
 	VkShaderModuleCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
