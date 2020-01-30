@@ -6,7 +6,7 @@ class CFrameBuffer
 {
 public:
 	void CreateFrameBuffers(const CCreateFrameBuffersParams& Params);
-	void Release(const CLogicalDevice& LogicalDevice);
+	void Release(const VkDevice& Device);
 	const std::vector<VkFramebuffer>& GetSwapChainFrameBuffers() const;
 private:
 	std::vector<VkFramebuffer> swapChainFramebuffers;

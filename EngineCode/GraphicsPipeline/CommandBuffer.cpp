@@ -2,7 +2,7 @@
 #include <stdexcept>
 void CCommandBuffer::CreateCommandBuffers(const CInstance& Instance)
 {
-	const std::vector<VkFramebuffer>& swapChainFrameBuffers = Instance.GetFrameBuffer().GetSwapChainFrameBuffers();
+	const std::vector<VkFramebuffer>& swapChainFrameBuffers = Instance.GetSwapChain().GetFrameBuffer().GetSwapChainFrameBuffers();
 	commandBuffers.resize(swapChainFrameBuffers.size());
 
 	VkCommandBufferAllocateInfo allocInfo = {};
@@ -30,7 +30,7 @@ void CCommandBuffer::CreateCommandBuffers(const CInstance& Instance)
 
 		VkRenderPassBeginInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = Instance.GetRenderPass().GetRenderPass();
+		renderPassInfo.renderPass = Instance.GetSwapChain().GetRenderPass().GetRenderPass();
 		renderPassInfo.framebuffer = swapChainFrameBuffers[i];
 		renderPassInfo.renderArea.offset = { 0, 0 };
 		renderPassInfo.renderArea.extent = Instance.GetSwapChain().GetSwapChainExtent();
@@ -40,7 +40,7 @@ void CCommandBuffer::CreateCommandBuffers(const CInstance& Instance)
 
 		vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, Instance.GetGraphicsPipeline().GetGraphicsPipeline());
+		vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, Instance.GetSwapChain().GetGraphicsPipeline().GetGraphicsPipeline());
 
 		vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
 

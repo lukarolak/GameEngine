@@ -49,40 +49,76 @@ void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(Params.m_LogicalDevice.GetLogicalDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS)
+    if (vkCreateSwapchainKHR(Params.m_LogicalDevice.GetLogicalDevice(), &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create swap chain!");
     }
 
-    vkGetSwapchainImagesKHR(Params.m_LogicalDevice.GetLogicalDevice(), swapChain, &imageCount, nullptr);
-    swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(Params.m_LogicalDevice.GetLogicalDevice(), swapChain, &imageCount, swapChainImages.data());
+    vkGetSwapchainImagesKHR(Params.m_LogicalDevice.GetLogicalDevice(), m_SwapChain, &imageCount, nullptr);
+    m_SwapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(Params.m_LogicalDevice.GetLogicalDevice(), m_SwapChain, &imageCount, m_SwapChainImages.data());
 
-    swapChainImageFormat = surfaceFormat.format;
-    swapChainExtent = extent;
+    m_SwapChainImageFormat = surfaceFormat.format;
+    m_SwapChainExtent = extent;
+
+
+    CreateImageViewsParams createImageViewParams(m_SwapChainImages, m_SwapChainImageFormat, Params.m_LogicalDevice.GetLogicalDevice());
+    m_ImageViews.CreateImageViews(createImageViewParams);
+
+    m_RenderPass.CreateRenderPass(m_SwapChainImageFormat, Params.m_LogicalDevice.GetLogicalDevice());
+
+    CreateGraphicsPipelineParams createGraphicsPipelineParams(Params.m_LogicalDevice.GetLogicalDevice(), m_SwapChainExtent, m_RenderPass.GetRenderPass());
+    m_GraphicsPipeline.CreateGraphicsPipeline(createGraphicsPipelineParams);
+
+    CCreateFrameBuffersParams createFrameBuffersParams(m_ImageViews.GetSwapChainImageViews(), m_RenderPass.GetRenderPass(), m_SwapChainExtent, Params.m_LogicalDevice.GetLogicalDevice());
+    m_FrameBuffer.CreateFrameBuffers(createFrameBuffersParams);
 }
 
 void CSwapChain::Release(const VkDevice& device)
 {
-    vkDestroySwapchainKHR(device, swapChain, nullptr);
+    m_FrameBuffer.Release(device);
+    m_GraphicsPipeline.Release(device);
+    m_RenderPass.Release(device);
+    m_ImageViews.Release(device);
+    vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
 }
 
 const std::vector<VkImage>& CSwapChain::GetSwapChainImages() const
 {
-    return swapChainImages;
+    return m_SwapChainImages;
 }
 
 const VkFormat& CSwapChain::GetSwapChainImageFormat() const
 {
-    return swapChainImageFormat;
+    return m_SwapChainImageFormat;
 }
 
 const VkExtent2D& CSwapChain::GetSwapChainExtent() const
 {
-    return swapChainExtent;
+    return m_SwapChainExtent;
 }
 
 const VkSwapchainKHR& CSwapChain::GetSwapChain() const
 {
-    return swapChain;
+    return m_SwapChain;
+}
+
+const CImageViews& CSwapChain::GetImageViews() const
+{
+    return m_ImageViews;
+}
+
+const CRenderPass& CSwapChain::GetRenderPass() const
+{
+    return m_RenderPass;
+}
+
+const CGraphicsPipeline& CSwapChain::GetGraphicsPipeline() const
+{
+    return m_GraphicsPipeline;
+}
+
+const CFrameBuffer& CSwapChain::GetFrameBuffer() const
+{
+    return m_FrameBuffer;
 }

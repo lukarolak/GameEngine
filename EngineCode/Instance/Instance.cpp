@@ -58,23 +58,12 @@ void CInstance::CreateInstance(const EngWindow& Window)
     m_LogicalDevice.CreateLogicalDevice(m_PhysicalDevice, m_Validation);
     CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_surface.GetSurface(), Window.GetResolution(), m_LogicalDevice);
     m_SwapChain.CreateSwapChain(swapChainParams);
-    CreateImageViewsParams imageViewsParams(m_SwapChain.GetSwapChainImages(), m_SwapChain.GetSwapChainImageFormat(), m_LogicalDevice.GetLogicalDevice());
-    m_ImageViews.CreateImageViews(imageViewsParams);
-    m_RenderPass.CreateRenderPass(m_SwapChain.GetSwapChainImageFormat(), m_LogicalDevice.GetLogicalDevice());
-    CreateGraphicsPipelineParams graphicalPipelineParams(m_LogicalDevice.GetLogicalDevice(), m_SwapChain.GetSwapChainExtent(), m_RenderPass.GetRenderPass());
-    m_GraphicPipeline.CreateGraphicsPipeline(graphicalPipelineParams);
-    CCreateFrameBuffersParams createFrameBuffersParams(m_ImageViews, m_RenderPass, m_SwapChain, m_LogicalDevice);
-    m_FrameBuffer.CreateFrameBuffers(createFrameBuffersParams);
     m_CommandPool.CreateCommandPool(m_PhysicalDevice, m_LogicalDevice);
 }
 
 void CInstance::Release()
 {
     m_CommandPool.Release(m_LogicalDevice);
-    m_FrameBuffer.Release(m_LogicalDevice);
-    m_GraphicPipeline.Release(m_LogicalDevice.GetLogicalDevice());
-    m_RenderPass.Release(m_LogicalDevice.GetLogicalDevice());
-    m_ImageViews.Release(m_LogicalDevice.GetLogicalDevice());
     m_SwapChain.Release(m_LogicalDevice.GetLogicalDevice());
     m_LogicalDevice.Release();
     m_Validation.Release(m_Instance);
@@ -82,19 +71,9 @@ void CInstance::Release()
     vkDestroyInstance(m_Instance, nullptr);
 }
 
-const CGraphicsPipeline& CInstance::GetGraphicsPipeline() const
-{
-    return m_GraphicPipeline;
-}
-
 const CSwapChain& CInstance::GetSwapChain() const
 {
     return m_SwapChain;
-}
-
-const CRenderPass& CInstance::GetRenderPass() const
-{
-    return m_RenderPass;
 }
 
 const CLogicalDevice& CInstance::GetLogicalDevice() const
@@ -105,11 +84,6 @@ const CLogicalDevice& CInstance::GetLogicalDevice() const
 const CPhysicalDevice& CInstance::GetPhysicalDevice() const
 {
     return m_PhysicalDevice;
-}
-
-const CFrameBuffer& CInstance::GetFrameBuffer() const
-{
-    return m_FrameBuffer;
 }
 
 const CCommandPool& CInstance::GetCommandPool() const

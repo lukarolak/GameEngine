@@ -1,12 +1,11 @@
 #include <GraphicsPipeline/FrameBuffer.h>
 #include <stdexcept>
+#include <TypeDefs/TypeDefs.h>
 void CFrameBuffer::CreateFrameBuffers(const CCreateFrameBuffersParams& Params)
 {
-    const std::vector<VkImageView>& imageViews = Params.m_ImageViews.GetSwapChainImageViews();
-	
-    swapChainFramebuffers.resize(imageViews.size());
+    swapChainFramebuffers.resize(Params.m_ImageViews.size());
     engIntU32 swapChainFrameBufferCounter = 0;
-    for (const VkImageView& imageView : imageViews)
+    for (const VkImageView& imageView : Params.m_ImageViews)
     {
         VkImageView attachments[] = 
         {
@@ -15,15 +14,15 @@ void CFrameBuffer::CreateFrameBuffers(const CCreateFrameBuffersParams& Params)
 
         VkFramebufferCreateInfo framebufferInfo = {};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = Params.m_RenderPass.GetRenderPass();
+        framebufferInfo.renderPass = Params.m_RenderPass;
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments = attachments;
-        const VkExtent2D&  swapChainExtent = Params.m_SwapChain.GetSwapChainExtent();
-        framebufferInfo.width = swapChainExtent.width;
-        framebufferInfo.height = swapChainExtent.height;
+        const VkExtent2D&  m_SwapChainExtent = Params.m_SwapChainExtent;
+        framebufferInfo.width = m_SwapChainExtent.width;
+        framebufferInfo.height = m_SwapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(Params.m_LogicalDevice.GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[swapChainFrameBufferCounter]) != VK_SUCCESS)
+        if (vkCreateFramebuffer(Params.m_Device, &framebufferInfo, nullptr, &swapChainFramebuffers[swapChainFrameBufferCounter]) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create framebuffer!");
         }
@@ -32,11 +31,11 @@ void CFrameBuffer::CreateFrameBuffers(const CCreateFrameBuffersParams& Params)
    
 }
 
-void CFrameBuffer::Release(const CLogicalDevice& LogicalDevice)
+void CFrameBuffer::Release(const VkDevice& Device)
 {
     for (const VkFramebuffer& frameBuffer : swapChainFramebuffers)
     {
-        vkDestroyFramebuffer(LogicalDevice.GetLogicalDevice(), frameBuffer, nullptr);
+        vkDestroyFramebuffer(Device, frameBuffer, nullptr);
     }
 }
 

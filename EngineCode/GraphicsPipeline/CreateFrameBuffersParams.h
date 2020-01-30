@@ -1,20 +1,18 @@
 #pragma once
-#include <ImageView/ImageViews.h>
-#include <GraphicsPipeline/RenderPass.h>
-#include <SwapChain/SwapChain.h>
-#include <Devices/LogicalDevice.h>
+#include <vulkan/vulkan_core.h>
+#include <vector>
 class CCreateFrameBuffersParams
 {
 public:
 	CCreateFrameBuffersParams(
-		const CImageViews& ImageViews,
-		const CRenderPass& RenderPass,
-		const CSwapChain& SwapChain,
-		const CLogicalDevice& LogicalDevice);
+		const std::vector<VkImageView>& ImageViews,
+		const VkRenderPass& RenderPass,
+		const VkExtent2D& SwapChainExtent,
+		const VkDevice& Device);
 
 public:
-	const CImageViews& m_ImageViews;
-	const CRenderPass& m_RenderPass;
-	const CSwapChain& m_SwapChain;
-	const CLogicalDevice& m_LogicalDevice;
+	const const std::vector<VkImageView>& m_ImageViews;
+	const VkRenderPass& m_RenderPass;
+	const VkExtent2D& m_SwapChainExtent;
+	const VkDevice& m_Device;
 };

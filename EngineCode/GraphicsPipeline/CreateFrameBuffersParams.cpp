@@ -1,9 +1,13 @@
 #include "CreateFrameBuffersParams.h"
 
-CCreateFrameBuffersParams::CCreateFrameBuffersParams(const CImageViews& ImageViews, const CRenderPass& RenderPass, const CSwapChain& SwapChain, const CLogicalDevice& LogicalDevice)
+CCreateFrameBuffersParams::CCreateFrameBuffersParams(
+	const std::vector<VkImageView>& ImageViews,
+	const VkRenderPass& RenderPass,
+	const VkExtent2D& SwapChainExtent,
+	const VkDevice& Device)
 	: m_ImageViews(ImageViews)
 	, m_RenderPass(RenderPass)
-	, m_SwapChain(SwapChain)
-	, m_LogicalDevice(LogicalDevice)
+	, m_SwapChainExtent(SwapChainExtent)
+	, m_Device(Device)
 {
 }
