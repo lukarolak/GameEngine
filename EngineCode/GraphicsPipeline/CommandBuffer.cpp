@@ -52,3 +52,8 @@ void CCommandBuffer::CreateCommandBuffers(const CInstance& Instance)
 		}
 	}
 }
+
+const std::vector<VkCommandBuffer>& CCommandBuffer::GetCommandBuffers() const
+{
+	return commandBuffers;
+}

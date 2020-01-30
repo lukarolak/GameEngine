@@ -3,7 +3,7 @@
 #include <Debuging/Validation.h>
 #include <stdexcept>
 #include <set>
-
+#include <Debuging/Assert.h>
 void CLogicalDevice::CreateLogicalDevice(const CPhysicalDevice& PhysicalDevice, const CValidation& ValidationLayers)
 {
 	QueueFamilyIndices indices = PhysicalDevice.GetQueueFamilyIndices();
@@ -49,14 +49,37 @@ void CLogicalDevice::CreateLogicalDevice(const CPhysicalDevice& PhysicalDevice, 
 
 	vkGetDeviceQueue(m_Device, indices.GetGraphicsFamily().value(), 0, &m_GraphicsQueue);
 	vkGetDeviceQueue(m_Device, indices.GetPresentFamily().value(), 0, &m_PresentQueue);
+
+	m_SynchronizationObjectGroup.CreateSynchronizationObjectsGroup(m_Device);
 }
 
 void CLogicalDevice::Release()
 {
+	m_SynchronizationObjectGroup.Release(m_Device);
 	vkDestroyDevice(m_Device, nullptr);
 }
 
 const VkDevice CLogicalDevice::GetLogicalDevice() const
 {
 	return m_Device;
+}
+
+const VkQueue& CLogicalDevice::GetGraphicsQueue() const
+{
+	return m_GraphicsQueue;
+}
+
+const VkQueue& CLogicalDevice::GetPresentQueue() const
+{
+	return m_PresentQueue;
+}
+
+const CSynchronizationObjectsGroup& CLogicalDevice::GetSynchronizationObjectsGroup() const
+{
+	return m_SynchronizationObjectGroup;
+}
+
+void CLogicalDevice::SetImageInUse(const engIntU32 FrameIndex)
+{
+	m_SynchronizationObjectGroup.SetImageInUse(FrameIndex);
 }

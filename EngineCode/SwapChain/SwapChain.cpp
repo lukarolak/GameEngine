@@ -81,3 +81,8 @@ const VkExtent2D& CSwapChain::GetSwapChainExtent() const
 {
     return swapChainExtent;
 }
+
+const VkSwapchainKHR& CSwapChain::GetSwapChain() const
+{
+    return swapChain;
+}

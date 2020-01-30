@@ -9,6 +9,7 @@ public:
 	const std::vector<VkImage>& GetSwapChainImages() const;
 	const VkFormat& GetSwapChainImageFormat() const;
 	const VkExtent2D& GetSwapChainExtent() const;
+	const VkSwapchainKHR& GetSwapChain() const;
 private:
 	VkSwapchainKHR swapChain;
 	std::vector<VkImage> swapChainImages;

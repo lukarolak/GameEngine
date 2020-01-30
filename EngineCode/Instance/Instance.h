@@ -25,6 +25,7 @@ public:
 	const CPhysicalDevice& GetPhysicalDevice() const;
 	const CFrameBuffer& GetFrameBuffer() const;
 	const CCommandPool& GetCommandPool() const;
+	void SetImageInUse(const engIntU32 FrameIndex);
 private:
 	VkInstance m_Instance;
 	CValidation m_Validation;

@@ -116,3 +116,8 @@ const CCommandPool& CInstance::GetCommandPool() const
 {
     return m_CommandPool;
 }
+
+void CInstance::SetImageInUse(const engIntU32 FrameIndex)
+{
+    m_LogicalDevice.SetImageInUse(FrameIndex);
+}

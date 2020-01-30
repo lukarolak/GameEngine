@@ -6,6 +6,7 @@ class CCommandBuffer
 {
 public:
 	void CreateCommandBuffers(const CInstance& Instance);
+	const std::vector<VkCommandBuffer>& GetCommandBuffers() const;
 private:
 	std::vector<VkCommandBuffer> commandBuffers;
 };

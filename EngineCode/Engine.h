@@ -22,4 +22,5 @@ private:
 	EngWindow m_window;
 	CInstance m_Instance;
 	CCommandBuffer m_CommandBuffer;
+	engIntU32 m_CurrentFrame = 0;
 };
