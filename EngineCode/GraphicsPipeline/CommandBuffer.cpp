@@ -1,17 +1,17 @@
 #include <GraphicsPipeline/CommandBuffer.h>
 #include <stdexcept>
-void CCommandBuffer::CreateCommandBuffers(const CInstance& Instance)
+#include <TypeDefs/TypeDefs.h>
+void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Params)
 {
-	const std::vector<VkFramebuffer>& swapChainFrameBuffers = Instance.GetSwapChain().GetFrameBuffer().GetSwapChainFrameBuffers();
-	commandBuffers.resize(swapChainFrameBuffers.size());
+	commandBuffers.resize(Params.m_SwapChainFrameBuffers.size());
 
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Instance.GetCommandPool().GetCommandPool();
+	allocInfo.commandPool = Params.m_CommandPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
 
-	if (vkAllocateCommandBuffers(Instance.GetLogicalDevice().GetLogicalDevice(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
+	if (vkAllocateCommandBuffers(Params.m_Device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
@@ -30,17 +30,17 @@ void CCommandBuffer::CreateCommandBuffers(const CInstance& Instance)
 
 		VkRenderPassBeginInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = Instance.GetSwapChain().GetRenderPass().GetRenderPass();
-		renderPassInfo.framebuffer = swapChainFrameBuffers[i];
+		renderPassInfo.renderPass = Params.m_RenderPass;
+		renderPassInfo.framebuffer = Params.m_SwapChainFrameBuffers[i];
 		renderPassInfo.renderArea.offset = { 0, 0 };
-		renderPassInfo.renderArea.extent = Instance.GetSwapChain().GetSwapChainExtent();
+		renderPassInfo.renderArea.extent = Params.m_SwapChainExtent;
 		VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 		renderPassInfo.clearValueCount = 1;
 		renderPassInfo.pClearValues = &clearColor;
 
 		vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, Instance.GetSwapChain().GetGraphicsPipeline().GetGraphicsPipeline());
+		vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, Params.m_GraphicsPipeline);
 
 		vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
 

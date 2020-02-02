@@ -56,14 +56,12 @@ void CInstance::CreateInstance(const EngWindow& Window)
     m_surface.CreateSurface(Window.GetWindow(), m_Instance);
     m_PhysicalDevice.PickPhysicalDevice(m_Instance, m_surface.GetSurface());
     m_LogicalDevice.CreateLogicalDevice(m_PhysicalDevice, m_Validation);
-    CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_surface.GetSurface(), Window.GetResolution(), m_LogicalDevice);
+    CreateSwapChainParams swapChainParams(m_PhysicalDevice.GetPhysicalDevice(), m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetResolution(), m_LogicalDevice.GetLogicalDevice());
     m_SwapChain.CreateSwapChain(swapChainParams);
-    m_CommandPool.CreateCommandPool(m_PhysicalDevice, m_LogicalDevice);
 }
 
 void CInstance::Release()
 {
-    m_CommandPool.Release(m_LogicalDevice);
     m_SwapChain.Release(m_LogicalDevice.GetLogicalDevice());
     m_LogicalDevice.Release();
     m_Validation.Release(m_Instance);
@@ -84,11 +82,6 @@ const CLogicalDevice& CInstance::GetLogicalDevice() const
 const CPhysicalDevice& CInstance::GetPhysicalDevice() const
 {
     return m_PhysicalDevice;
-}
-
-const CCommandPool& CInstance::GetCommandPool() const
-{
-    return m_CommandPool;
 }
 
 void CInstance::SetImageInUse(const engIntU32 FrameIndex)

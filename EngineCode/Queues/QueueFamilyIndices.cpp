@@ -9,7 +9,7 @@ void QueueFamilyIndices::InitQueueFamilyIndices(VkPhysicalDevice Device, const V
 	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(Device, &queueFamilyCount, queueFamilies.data());
 
-	int i = 0;
+	engIntU32 i = 0;
 	for (const auto& queueFamily : queueFamilies)
 	{
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)

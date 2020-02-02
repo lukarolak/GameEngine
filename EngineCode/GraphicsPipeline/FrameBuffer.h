@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
 #include <vector>
-#include <GraphicsPipeline/CreateFrameBuffersParams.h>
+#include <GraphicsPipeline/Types/CreateFrameBuffersParams.h>
 class CFrameBuffer
 {
 public:

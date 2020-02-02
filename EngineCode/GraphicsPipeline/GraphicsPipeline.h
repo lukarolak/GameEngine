@@ -1,5 +1,5 @@
 #pragma once
-#include <GraphicsPipeline/CreateGraphicsPipelineParams.h>
+#include <GraphicsPipeline/Types/CreateGraphicsPipelineParams.h>
 #include <vector>
 class CGraphicsPipeline
 {

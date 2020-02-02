@@ -5,6 +5,8 @@
 #include <GraphicsPipeline/RenderPass.h>
 #include <GraphicsPipeline/GraphicsPipeline.h>
 #include <GraphicsPipeline/FrameBuffer.h>
+#include <GraphicsPipeline/CommandPool.h>
+#include <GraphicsPipeline/CommandBuffer.h>
 class CSwapChain
 {
 public:
@@ -18,6 +20,7 @@ public:
 	const CRenderPass& GetRenderPass() const;
 	const CGraphicsPipeline& GetGraphicsPipeline() const;
 	const CFrameBuffer& GetFrameBuffer() const;
+	const CCommandBuffer& GetCommandBuffer() const;
 private:
 	VkSwapchainKHR m_SwapChain;
 	std::vector<VkImage> m_SwapChainImages;
@@ -27,4 +30,6 @@ private:
 	CRenderPass m_RenderPass;
 	CGraphicsPipeline m_GraphicsPipeline;
 	CFrameBuffer m_FrameBuffer;
+	CCommandPool m_CommandPool;
+	CCommandBuffer m_CommandBuffer;
 };

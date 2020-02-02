@@ -6,8 +6,7 @@
 #include <Devices/LogicalDevice.h>
 #include <Window/WindowSurface.h>
 #include <Window/Window.h>
-#include <SwapChain/SwapChain.h>createFrameBuffersParams
-#include <GraphicsPipeline/CommandPool.h>
+#include <SwapChain/SwapChain.h>
 class CInstance
 {
 public:
@@ -26,5 +25,4 @@ private:
 	CLogicalDevice m_LogicalDevice;
 	CWindowSurface m_surface;
 	CSwapChain m_SwapChain;
-	CCommandPool m_CommandPool;
 };

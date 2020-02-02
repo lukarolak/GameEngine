@@ -5,7 +5,7 @@
 void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
 {
     SwapChainSupportDetails swapChainSupport;
-    swapChainSupport.InitSwapChainSupportDetails(Params.m_PhysicalDevice.GetPhysicalDevice(), Params.m_Surface);
+    swapChainSupport.InitSwapChainSupportDetails(Params.m_PhysicalDevice, Params.m_Surface);
     VkSurfaceFormatKHR surfaceFormat = swapChainSupport.GetOptimalSwapSurfaceFormat();
     VkPresentModeKHR presentMode = swapChainSupport.GetOptimalSwapPresentMode();
     VkExtent2D extent = swapChainSupport.GetOptimalSwapExtent(Params.m_Resolution);
@@ -27,7 +27,7 @@ void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    const QueueFamilyIndices& indices = Params.m_PhysicalDevice.GetQueueFamilyIndices();
+    const QueueFamilyIndices& indices = Params.m_QueueFamilyIndices;
     uint32_t queueFamilyIndices[] = { indices.GetGraphicsFamily().value(), indices.GetPresentFamily().value() };
 
     if (indices.GetGraphicsFamily() != indices.GetPresentFamily()) 
@@ -49,33 +49,39 @@ void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(Params.m_LogicalDevice.GetLogicalDevice(), &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
+    if (vkCreateSwapchainKHR(Params.m_LogicalDevice, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create swap chain!");
     }
 
-    vkGetSwapchainImagesKHR(Params.m_LogicalDevice.GetLogicalDevice(), m_SwapChain, &imageCount, nullptr);
+    vkGetSwapchainImagesKHR(Params.m_LogicalDevice, m_SwapChain, &imageCount, nullptr);
     m_SwapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(Params.m_LogicalDevice.GetLogicalDevice(), m_SwapChain, &imageCount, m_SwapChainImages.data());
+    vkGetSwapchainImagesKHR(Params.m_LogicalDevice, m_SwapChain, &imageCount, m_SwapChainImages.data());
 
     m_SwapChainImageFormat = surfaceFormat.format;
     m_SwapChainExtent = extent;
 
 
-    CreateImageViewsParams createImageViewParams(m_SwapChainImages, m_SwapChainImageFormat, Params.m_LogicalDevice.GetLogicalDevice());
+    CreateImageViewsParams createImageViewParams(m_SwapChainImages, m_SwapChainImageFormat, Params.m_LogicalDevice);
     m_ImageViews.CreateImageViews(createImageViewParams);
 
-    m_RenderPass.CreateRenderPass(m_SwapChainImageFormat, Params.m_LogicalDevice.GetLogicalDevice());
+    m_RenderPass.CreateRenderPass(m_SwapChainImageFormat, Params.m_LogicalDevice);
 
-    CreateGraphicsPipelineParams createGraphicsPipelineParams(Params.m_LogicalDevice.GetLogicalDevice(), m_SwapChainExtent, m_RenderPass.GetRenderPass());
+    CreateGraphicsPipelineParams createGraphicsPipelineParams(Params.m_LogicalDevice, m_SwapChainExtent, m_RenderPass.GetRenderPass());
     m_GraphicsPipeline.CreateGraphicsPipeline(createGraphicsPipelineParams);
 
-    CCreateFrameBuffersParams createFrameBuffersParams(m_ImageViews.GetSwapChainImageViews(), m_RenderPass.GetRenderPass(), m_SwapChainExtent, Params.m_LogicalDevice.GetLogicalDevice());
+    CCreateFrameBuffersParams createFrameBuffersParams(m_ImageViews.GetSwapChainImageViews(), m_RenderPass.GetRenderPass(), m_SwapChainExtent, Params.m_LogicalDevice);
     m_FrameBuffer.CreateFrameBuffers(createFrameBuffersParams);
+
+    m_CommandPool.CreateCommandPool(Params.m_QueueFamilyIndices.GetGraphicsFamily().value(), Params.m_LogicalDevice);
+
+    CCreateCommandBufferParams createCommandBufferParams(m_CommandPool.GetCommandPool(), Params.m_LogicalDevice, m_RenderPass.GetRenderPass(),m_FrameBuffer.GetSwapChainFrameBuffers(),m_SwapChainExtent,m_GraphicsPipeline.GetGraphicsPipeline());
+    m_CommandBuffer.CreateCommandBuffers(createCommandBufferParams);
 }
 
 void CSwapChain::Release(const VkDevice& device)
 {
+    m_CommandPool.Release(device);
     m_FrameBuffer.Release(device);
     m_GraphicsPipeline.Release(device);
     m_RenderPass.Release(device);
@@ -121,4 +127,9 @@ const CGraphicsPipeline& CSwapChain::GetGraphicsPipeline() const
 const CFrameBuffer& CSwapChain::GetFrameBuffer() const
 {
     return m_FrameBuffer;
+}
+
+const CCommandBuffer& CSwapChain::GetCommandBuffer() const
+{
+    return m_CommandBuffer;
 }

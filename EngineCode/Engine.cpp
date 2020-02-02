@@ -11,7 +11,6 @@ void Engine::Run()
 void Engine::InitVulkan()
 {
 	m_Instance.CreateInstance(m_window);
-	m_CommandBuffer.CreateCommandBuffers(m_Instance);
 }
 
 void Engine::MainLoop()
@@ -66,7 +65,7 @@ void Engine::DrawFrame()
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &m_CommandBuffer.GetCommandBuffers()[imageIndex];
+	submitInfo.pCommandBuffers = &m_Instance.GetSwapChain().GetCommandBuffer().GetCommandBuffers()[imageIndex];
 
 	VkSemaphore signalSemaphores[] = { synchronizationObjectsForThisFrame.GetRenderFinishedSemaphore() };
 	submitInfo.signalSemaphoreCount = 1;
