@@ -2,6 +2,7 @@
 #include <Devices/LogicalDevice.h>
 #include <Devices/PhysicalDevice.h>
 #include <Window/Resolution.h>
+#include <GLFW/glfw3.h>
 class CreateSwapChainParams
 {
 public:
@@ -10,7 +11,8 @@ public:
 	const QueueFamilyIndices& QueueFamilyIndices,
 	const VkSurfaceKHR& Surface,
 	const WindowResolution& Resolution,
-	const VkDevice& LogicalDevice
+	const VkDevice& LogicalDevice,
+	GLFWwindow* m_Window
 	);
 
 public:
@@ -19,4 +21,5 @@ public:
 	const VkSurfaceKHR& m_Surface;
 	const WindowResolution& m_Resolution;
 	const VkDevice& m_LogicalDevice;
+	GLFWwindow* m_Window;
 };

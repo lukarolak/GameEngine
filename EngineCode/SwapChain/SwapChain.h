@@ -10,8 +10,8 @@
 class CSwapChain
 {
 public:
-	void CreateSwapChain(const CreateSwapChainParams& Params);
-	void Release(const VkDevice& device);
+	void CreateSwapChain(const CreateSwapChainParams& Params, const bool CreateCommandPool);
+	void Release(const VkDevice& device, const bool ReleaseCommandPool);
 	const std::vector<VkImage>& GetSwapChainImages() const;
 	const VkFormat& GetSwapChainImageFormat() const;
 	const VkExtent2D& GetSwapChainExtent() const;
@@ -21,6 +21,7 @@ public:
 	const CGraphicsPipeline& GetGraphicsPipeline() const;
 	const CFrameBuffer& GetFrameBuffer() const;
 	const CCommandBuffer& GetCommandBuffer() const;
+	void RecreateSwapChain(const CreateSwapChainParams& Params);
 private:
 	VkSwapchainKHR m_SwapChain;
 	std::vector<VkImage> m_SwapChainImages;

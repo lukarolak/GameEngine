@@ -2,6 +2,7 @@
 #include <vulkan/vulkan_core.h>
 #include <vector>
 #include <Window/Resolution.h>
+#include <GLFW/glfw3.h>
 class SwapChainSupportDetails
 {
 public:
@@ -9,7 +10,7 @@ public:
     bool IsSwapChainAdequate();
     VkSurfaceFormatKHR GetOptimalSwapSurfaceFormat();
     VkPresentModeKHR GetOptimalSwapPresentMode();
-    VkExtent2D GetOptimalSwapExtent(const WindowResolution& Resolution);
+    VkExtent2D GetOptimalSwapChainExtent(GLFWwindow* Window, const WindowResolution& Resolution);
     const VkSurfaceCapabilitiesKHR& GetCapabilities();
 private:
     VkSurfaceCapabilitiesKHR m_Capabilities;

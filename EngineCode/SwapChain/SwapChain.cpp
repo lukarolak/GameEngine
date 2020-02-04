@@ -2,13 +2,13 @@
 #include <SwapChain/SwapChainSupportDetails.h>
 #include <Queues/QueueFamilyIndices.h>
 #include <stdexcept>
-void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
+void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params, const bool CreateCommandPool)
 {
     SwapChainSupportDetails swapChainSupport;
     swapChainSupport.InitSwapChainSupportDetails(Params.m_PhysicalDevice, Params.m_Surface);
     VkSurfaceFormatKHR surfaceFormat = swapChainSupport.GetOptimalSwapSurfaceFormat();
     VkPresentModeKHR presentMode = swapChainSupport.GetOptimalSwapPresentMode();
-    VkExtent2D extent = swapChainSupport.GetOptimalSwapExtent(Params.m_Resolution);
+    VkExtent2D extent = swapChainSupport.GetOptimalSwapChainExtent(Params.m_Window, Params.m_Resolution);
     
     const VkSurfaceCapabilitiesKHR& swapChainCapabilities = swapChainSupport.GetCapabilities();
     engIntU32 imageCount = swapChainCapabilities.minImageCount + 1;
@@ -73,15 +73,21 @@ void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
     CCreateFrameBuffersParams createFrameBuffersParams(m_ImageViews.GetSwapChainImageViews(), m_RenderPass.GetRenderPass(), m_SwapChainExtent, Params.m_LogicalDevice);
     m_FrameBuffer.CreateFrameBuffers(createFrameBuffersParams);
 
-    m_CommandPool.CreateCommandPool(Params.m_QueueFamilyIndices.GetGraphicsFamily().value(), Params.m_LogicalDevice);
+    if (CreateCommandPool)
+    {
+        m_CommandPool.CreateCommandPool(Params.m_QueueFamilyIndices.GetGraphicsFamily().value(), Params.m_LogicalDevice);
+    }
 
     CCreateCommandBufferParams createCommandBufferParams(m_CommandPool.GetCommandPool(), Params.m_LogicalDevice, m_RenderPass.GetRenderPass(),m_FrameBuffer.GetSwapChainFrameBuffers(),m_SwapChainExtent,m_GraphicsPipeline.GetGraphicsPipeline());
     m_CommandBuffer.CreateCommandBuffers(createCommandBufferParams);
 }
 
-void CSwapChain::Release(const VkDevice& device)
+void CSwapChain::Release(const VkDevice& device, const bool ReleaseCommandPool)
 {
-    m_CommandPool.Release(device);
+    if (ReleaseCommandPool)
+    {
+        m_CommandPool.Release(device);
+    }
     m_FrameBuffer.Release(device);
     m_GraphicsPipeline.Release(device);
     m_RenderPass.Release(device);
@@ -132,4 +138,12 @@ const CFrameBuffer& CSwapChain::GetFrameBuffer() const
 const CCommandBuffer& CSwapChain::GetCommandBuffer() const
 {
     return m_CommandBuffer;
+}
+
+void CSwapChain::RecreateSwapChain(const CreateSwapChainParams& Params)
+{
+    vkDeviceWaitIdle(Params.m_LogicalDevice);
+    const bool modifyCommandPool = false;
+    Release(Params.m_LogicalDevice, modifyCommandPool);
+    CreateSwapChain(Params, modifyCommandPool);
 }

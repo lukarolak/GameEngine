@@ -56,13 +56,15 @@ void CInstance::CreateInstance(const EngWindow& Window)
     m_surface.CreateSurface(Window.GetWindow(), m_Instance);
     m_PhysicalDevice.PickPhysicalDevice(m_Instance, m_surface.GetSurface());
     m_LogicalDevice.CreateLogicalDevice(m_PhysicalDevice, m_Validation);
-    CreateSwapChainParams swapChainParams(m_PhysicalDevice.GetPhysicalDevice(), m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetResolution(), m_LogicalDevice.GetLogicalDevice());
-    m_SwapChain.CreateSwapChain(swapChainParams);
+    CreateSwapChainParams swapChainParams(m_PhysicalDevice.GetPhysicalDevice(), m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetResolution(), m_LogicalDevice.GetLogicalDevice(), Window.GetWindow());
+    const bool createCommandPool = true;
+    m_SwapChain.CreateSwapChain(swapChainParams, createCommandPool);
 }
 
 void CInstance::Release()
 {
-    m_SwapChain.Release(m_LogicalDevice.GetLogicalDevice());
+    const bool releaseCommandPool = true;
+    m_SwapChain.Release(m_LogicalDevice.GetLogicalDevice(), releaseCommandPool);
     m_LogicalDevice.Release();
     m_Validation.Release(m_Instance);
     m_surface.Release(m_Instance);

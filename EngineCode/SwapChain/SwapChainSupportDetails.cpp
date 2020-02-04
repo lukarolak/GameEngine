@@ -60,7 +60,7 @@ VkPresentModeKHR SwapChainSupportDetails::GetOptimalSwapPresentMode()
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D SwapChainSupportDetails::GetOptimalSwapExtent(const WindowResolution& Resolution)
+VkExtent2D SwapChainSupportDetails::GetOptimalSwapChainExtent(GLFWwindow* Window, const WindowResolution& Resolution)
 {
 	if (m_Capabilities.currentExtent.width != UINT32_MAX) 
 	{
@@ -68,8 +68,11 @@ VkExtent2D SwapChainSupportDetails::GetOptimalSwapExtent(const WindowResolution&
 	}
 	else 
 	{
-		Resolution.GetWidth();
-		VkExtent2D actualExtent = { Resolution.GetWidth(), Resolution.GetHeight() };
+		int width;
+		int height;
+		glfwGetFramebufferSize(Window, &width, &height);
+
+		VkExtent2D actualExtent = { static_cast<engIntU32>(width), static_cast<engIntU32>(height) };
 		
 		actualExtent.width = std::max(m_Capabilities.minImageExtent.width, std::min(m_Capabilities.maxImageExtent.width, actualExtent.width));
 		actualExtent.height = std::max(m_Capabilities.minImageExtent.height, std::min(m_Capabilities.maxImageExtent.height, actualExtent.height));
