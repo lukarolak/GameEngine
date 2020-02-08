@@ -20,5 +20,4 @@ private:
 private:
 	EngWindow m_window;
 	CInstance m_Instance;
-	engIntU32 m_CurrentFrame = 0;
 };

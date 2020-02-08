@@ -83,3 +83,8 @@ void CLogicalDevice::SetImageInUse(const engIntU32 FrameIndex)
 {
 	m_SynchronizationObjectGroup.SetImageInUse(FrameIndex);
 }
+
+void CLogicalDevice::WaitForDeviceIdle() const
+{
+	vkDeviceWaitIdle(m_Device);
+}

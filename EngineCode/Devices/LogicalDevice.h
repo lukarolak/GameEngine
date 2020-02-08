@@ -13,6 +13,7 @@ public:
 	const VkQueue& GetPresentQueue() const;
 	const CSynchronizationObjectsGroup& GetSynchronizationObjectsGroup() const;
 	void SetImageInUse(const engIntU32 FrameIndex);
+	void WaitForDeviceIdle() const;
 private:
 	VkDevice m_Device;
 	VkQueue m_GraphicsQueue;

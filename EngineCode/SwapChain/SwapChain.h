@@ -7,21 +7,17 @@
 #include <GraphicsPipeline/FrameBuffer.h>
 #include <GraphicsPipeline/CommandPool.h>
 #include <GraphicsPipeline/CommandBuffer.h>
+#include <Devices/LogicalDevice.h>
 class CSwapChain
 {
 public:
-	void CreateSwapChain(const CreateSwapChainParams& Params, const bool CreateCommandPool);
-	void Release(const VkDevice& device, const bool ReleaseCommandPool);
-	const std::vector<VkImage>& GetSwapChainImages() const;
-	const VkFormat& GetSwapChainImageFormat() const;
-	const VkExtent2D& GetSwapChainExtent() const;
-	const VkSwapchainKHR& GetSwapChain() const;
-	const CImageViews& GetImageViews() const;
-	const CRenderPass& GetRenderPass() const;
-	const CGraphicsPipeline& GetGraphicsPipeline() const;
-	const CFrameBuffer& GetFrameBuffer() const;
-	const CCommandBuffer& GetCommandBuffer() const;
+	void CreateSwapChain(const CreateSwapChainParams& Params);
+	void Release();
+	void DrawFrame();
+private:
 	void RecreateSwapChain(const CreateSwapChainParams& Params);
+	void ReleaseSwapChainDependants();
+	void CreateSwapChainDependants(const CreateSwapChainParams& Params);
 private:
 	VkSwapchainKHR m_SwapChain;
 	std::vector<VkImage> m_SwapChainImages;
@@ -33,4 +29,6 @@ private:
 	CFrameBuffer m_FrameBuffer;
 	CCommandPool m_CommandPool;
 	CCommandBuffer m_CommandBuffer;
+	CLogicalDevice m_LogicalDevice;
+	engIntU32 m_CurrentFrame = 0;
 };

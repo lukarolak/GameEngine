@@ -55,17 +55,13 @@ void CInstance::CreateInstance(const EngWindow& Window)
     m_Validation.SetupDebugMessenger(m_Instance);
     m_surface.CreateSurface(Window.GetWindow(), m_Instance);
     m_PhysicalDevice.PickPhysicalDevice(m_Instance, m_surface.GetSurface());
-    m_LogicalDevice.CreateLogicalDevice(m_PhysicalDevice, m_Validation);
-    CreateSwapChainParams swapChainParams(m_PhysicalDevice.GetPhysicalDevice(), m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetResolution(), m_LogicalDevice.GetLogicalDevice(), Window.GetWindow());
-    const bool createCommandPool = true;
-    m_SwapChain.CreateSwapChain(swapChainParams, createCommandPool);
+    CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetResolution(), Window.GetWindow(), m_Validation);
+    m_SwapChain.CreateSwapChain(swapChainParams);
 }
 
 void CInstance::Release()
 {
-    const bool releaseCommandPool = true;
-    m_SwapChain.Release(m_LogicalDevice.GetLogicalDevice(), releaseCommandPool);
-    m_LogicalDevice.Release();
+    m_SwapChain.Release();
     m_Validation.Release(m_Instance);
     m_surface.Release(m_Instance);
     vkDestroyInstance(m_Instance, nullptr);
@@ -76,17 +72,12 @@ const CSwapChain& CInstance::GetSwapChain() const
     return m_SwapChain;
 }
 
-const CLogicalDevice& CInstance::GetLogicalDevice() const
-{
-    return m_LogicalDevice;
-}
-
 const CPhysicalDevice& CInstance::GetPhysicalDevice() const
 {
     return m_PhysicalDevice;
 }
 
-void CInstance::SetImageInUse(const engIntU32 FrameIndex)
+void CInstance::DrawFrame()
 {
-    m_LogicalDevice.SetImageInUse(FrameIndex);
+    m_SwapChain.DrawFrame();
 }
