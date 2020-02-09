@@ -1,20 +1,21 @@
 #include <Window/Window.h>
 #include <Debuging/Assert.h>
 #include <TypeDefs/TypeDefs.h>
-
+#include <Instance/Instance.h>
 EngWindow::EngWindow()
 	: m_Window(nullptr)
 {
 	m_Resolution.SetResolution(800, 600);
 }
-void EngWindow::InitWindow()
+void EngWindow::InitWindow(void* engine)
 {
 	glfwInit();
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	
 	m_Window = glfwCreateWindow(m_Resolution.GetWidth(), m_Resolution.GetHeight(), "Vulkan", nullptr, nullptr);
+	glfwSetWindowUserPointer(m_Window, engine);
+	glfwSetFramebufferSizeCallback(m_Window, OnFrameBufferResizeCallback);
 }
 
 int EngWindow::GetShouldClose()
@@ -38,4 +39,10 @@ void EngWindow::Release()
 {
 	ENG_ASSERT(m_Window);
 	glfwDestroyWindow(m_Window);
+}
+
+void EngWindow::OnFrameBufferResizeCallback(GLFWwindow* Window, int Width, int Height)
+{
+	CInstance* instance = reinterpret_cast<CInstance*>(glfwGetWindowUserPointer(Window));
+	instance->RecreateSwapChainOnNextDrawCall();
 }

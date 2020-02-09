@@ -1,4 +1,4 @@
-#include <Devices/Synchronization/SynchronizationObjectsGroup.h>
+#include <Synchronization/SynchronizationObjectsGroup.h>
 #include <Debuging/Assert.h>
 constexpr engIntU32 m_MaxFramesInFlight = 2;
 
@@ -34,4 +34,12 @@ void CSynchronizationObjectsGroup::SetImageInUse(const engIntU32 FrameIndex)
 {
 	ENG_ASSERT(FrameIndex <= m_SynchronizationObjectGroup.size(), "Frame index out of bounds");
 	m_SynchronizationObjectGroup[FrameIndex].SetImageInUse();
+}
+
+void CSynchronizationObjectsGroup::RecreateSynchronizationObjectGroups(const VkDevice& Device)
+{
+	for (CSynchronizationObjects& synchronizationObjectGroup : m_SynchronizationObjectGroup)
+	{
+		synchronizationObjectGroup.RecreateSynchronizationObjects(Device);
+	}
 }

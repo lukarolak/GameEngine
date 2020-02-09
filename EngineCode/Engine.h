@@ -6,11 +6,11 @@
 #include <TypeDefs/TypeDefs.h>
 #include <Window/Window.h>
 #include <Instance/Instance.h>
-class Engine
+class CEngine
 {
 public:
-	Engine() = default;
-	~Engine() = default;
+	CEngine() = default;
+	~CEngine() = default;
 	void Run();
 private:
 	void InitVulkan();

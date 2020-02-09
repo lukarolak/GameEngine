@@ -1,6 +1,7 @@
-#include <Devices/Synchronization/SynchronizationObjects.h>
+#include <Synchronization/SynchronizationObjects.h>
 #include <Debuging/Assert.h>
-void CSynchronizationObjects::CreateSynchronnizationObjects(const VkDevice& device)
+#include "SynchronizationObjects.h"
+void CSynchronizationObjects::CreateSynchronnizationObjects(const VkDevice& Device)
 {
 	VkSemaphoreCreateInfo semaphoreInfo = {};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -9,9 +10,9 @@ void CSynchronizationObjects::CreateSynchronnizationObjects(const VkDevice& devi
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	VkResult cratedImageAvailabeSemaphore = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore);
-	VkResult cratedRenderFinishedSemaphore = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore);
-	VkResult createdInFlightFence = vkCreateFence(device, &fenceInfo, nullptr, &m_InFlightFence);
+	VkResult cratedImageAvailabeSemaphore = vkCreateSemaphore(Device, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore);
+	VkResult cratedRenderFinishedSemaphore = vkCreateSemaphore(Device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore);
+	VkResult createdInFlightFence = vkCreateFence(Device, &fenceInfo, nullptr, &m_InFlightFence);
 
 	if (cratedImageAvailabeSemaphore != VK_SUCCESS || cratedRenderFinishedSemaphore != VK_SUCCESS || createdInFlightFence != VK_SUCCESS)
 	{
@@ -43,19 +44,26 @@ const VkFence& CSynchronizationObjects::GetImageInFlightFence() const
 	return m_ImageInFlight;
 }
 
-void CSynchronizationObjects::SetImageInFlight(const VkFence& fence)
+void CSynchronizationObjects::SetImageInFlight(const VkFence& Fence)
 {
-	m_ImageInFlight = fence;
+	m_ImageInFlight = Fence;
 }
 
-void CSynchronizationObjects::Release(const VkDevice& device)
+void CSynchronizationObjects::Release(const VkDevice& Device)
 {
-	vkDestroySemaphore(device, m_RenderFinishedSemaphore, nullptr);
-	vkDestroySemaphore(device, m_ImageAvailableSemaphore, nullptr);
-	vkDestroyFence(device, m_InFlightFence, nullptr);
+	vkDestroySemaphore(Device, m_RenderFinishedSemaphore, nullptr);
+	vkDestroySemaphore(Device, m_ImageAvailableSemaphore, nullptr);
+	vkDestroyFence(Device, m_InFlightFence, nullptr);
+	m_ImageInFlight = VK_NULL_HANDLE;
 }
 
 void CSynchronizationObjects::SetImageInUse()
 {
 	m_ImageInFlight = m_InFlightFence;
+}
+
+void CSynchronizationObjects::RecreateSynchronizationObjects(const VkDevice& Device)
+{
+	Release(Device);
+	CreateSynchronnizationObjects(Device);
 }

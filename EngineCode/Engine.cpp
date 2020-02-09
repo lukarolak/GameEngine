@@ -1,19 +1,19 @@
 #include "Engine.h"
 #include <stdexcept>
-void Engine::Run()
+void CEngine::Run()
 {
-	m_window.InitWindow();
+	m_window.InitWindow(&m_Instance);
 	InitVulkan();
 	MainLoop();
 	CleanUp();
 }
 
-void Engine::InitVulkan()
+void CEngine::InitVulkan()
 {
 	m_Instance.CreateInstance(m_window);
 }
 
-void Engine::MainLoop()
+void CEngine::MainLoop()
 {
 	while (m_window.GetShouldClose() == false)
 	{
@@ -22,14 +22,14 @@ void Engine::MainLoop()
 	}
 }
 
-void Engine::CleanUp()
+void CEngine::CleanUp()
 {
 	m_Instance.Release();
 	m_window.Release();
 	glfwTerminate();
 }
 
-void Engine::DrawFrame()
+void CEngine::DrawFrame()
 {
-	m_Instance.DrawFrame();
+	m_Instance.DrawFrame(m_window);
 }

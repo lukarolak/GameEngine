@@ -8,7 +8,7 @@
 #include "Engine.h"
 
 int main() {
-    Engine engine;
+    CEngine engine;
 
     try 
     {

@@ -4,6 +4,11 @@
 class CGraphicsPipeline
 {
 public:
+	enum class GraphicsPipelineMembers
+	{
+		PipelineLayout,
+		GraphicsPipeline
+	};
 	void CreateGraphicsPipeline(const CreateGraphicsPipelineParams& Params);
 	void Release(const VkDevice& LogicalDevice);
 	const VkPipeline& GetGraphicsPipeline() const;

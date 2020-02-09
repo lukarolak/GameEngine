@@ -77,7 +77,13 @@ const CPhysicalDevice& CInstance::GetPhysicalDevice() const
     return m_PhysicalDevice;
 }
 
-void CInstance::DrawFrame()
+void CInstance::DrawFrame(const EngWindow& Window)
 {
-    m_SwapChain.DrawFrame();
+    CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetResolution(), Window.GetWindow(), m_Validation);
+    m_SwapChain.DrawFrame(swapChainParams);
+}
+
+void CInstance::RecreateSwapChainOnNextDrawCall()
+{
+    m_SwapChain.RecreateSwapChainOnNextDrawCall();
 }

@@ -1,4 +1,4 @@
-#include <GraphicsPipeline/CreateCommandBufferParams.h>
+#include <GraphicsPipeline/Types/CreateCommandBufferParams.h>
 
 CCreateCommandBufferParams::CCreateCommandBufferParams(const VkCommandPool& CommandPool, const VkDevice& Device, const VkRenderPass& RenderPass, const std::vector<VkFramebuffer>& SwapChainFrameBuffers, const VkExtent2D& SwapChainExtent, const VkPipeline& GraphicsPipeline)
 	:  m_CommandPool(CommandPool)

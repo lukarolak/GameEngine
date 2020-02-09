@@ -13,11 +13,24 @@ class CSwapChain
 public:
 	void CreateSwapChain(const CreateSwapChainParams& Params);
 	void Release();
-	void DrawFrame();
+	void DrawFrame(const CreateSwapChainParams& Params);
+	void RecreateSwapChainOnNextDrawCall();
 private:
+	enum class SwapChainMember
+	{
+		SwapChain,
+		ImageViews,
+		RenderPass,
+		GraphicsPipeline,
+		FrameBuffer,
+		CommandBuffer,
+		LogicalDevice,
+		CommandPool
+	};
 	void RecreateSwapChain(const CreateSwapChainParams& Params);
-	void ReleaseSwapChainDependants();
-	void CreateSwapChainDependants(const CreateSwapChainParams& Params);
+	void ReleaseSwapChainMember(const SwapChainMember member);
+	void CreateSwapChainMember(const CreateSwapChainParams& Params,const SwapChainMember member);
+	void WaitForValidFrameBufferSize(GLFWwindow* Window, const VkDevice& Device);
 private:
 	VkSwapchainKHR m_SwapChain;
 	std::vector<VkImage> m_SwapChainImages;
@@ -31,4 +44,5 @@ private:
 	CCommandBuffer m_CommandBuffer;
 	CLogicalDevice m_LogicalDevice;
 	engIntU32 m_CurrentFrame = 0;
+	bool m_RecreateSwapChain = false;
 };

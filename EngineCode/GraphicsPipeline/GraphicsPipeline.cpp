@@ -1,6 +1,7 @@
 #include "GraphicsPipeline.h"
 #include <FileIO/FileIO.h>
 #include <stdexcept>
+
 void CGraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParams& Params)
 {
     std::vector<char> vertShaderCode = FileIO::ReadFile("shaders/vert.spv");

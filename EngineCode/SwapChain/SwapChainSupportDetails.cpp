@@ -71,7 +71,7 @@ VkExtent2D SwapChainSupportDetails::GetOptimalSwapChainExtent(GLFWwindow* Window
 		int width;
 		int height;
 		glfwGetFramebufferSize(Window, &width, &height);
-
+		
 		VkExtent2D actualExtent = { static_cast<engIntU32>(width), static_cast<engIntU32>(height) };
 		
 		actualExtent.width = std::max(m_Capabilities.minImageExtent.width, std::min(m_Capabilities.maxImageExtent.width, actualExtent.width));

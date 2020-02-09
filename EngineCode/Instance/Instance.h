@@ -15,8 +15,8 @@ public:
 	void Release();
 	const CSwapChain& GetSwapChain() const;
 	const CPhysicalDevice& GetPhysicalDevice() const;
-	void SetImageInUse(const engIntU32 FrameIndex);
-	void DrawFrame();
+	void DrawFrame(const EngWindow& Window);
+	void RecreateSwapChainOnNextDrawCall();
 private:
 	VkInstance m_Instance;
 	CValidation m_Validation;

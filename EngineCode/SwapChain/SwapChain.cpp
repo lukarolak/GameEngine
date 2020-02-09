@@ -4,30 +4,47 @@
 #include <stdexcept>
 void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
 {
-    m_LogicalDevice.CreateLogicalDevice(Params.m_PhysicalDevice, Params.m_ValidationLayers);
-    const VkDevice device = m_LogicalDevice.GetLogicalDevice();
-    m_CommandPool.CreateCommandPool(Params.m_QueueFamilyIndices.GetGraphicsFamily().value(), device);
-    CreateSwapChainDependants(Params);
+    CreateSwapChainMember(Params, SwapChainMember::LogicalDevice);
+    CreateSwapChainMember(Params, SwapChainMember::CommandPool);
+    CreateSwapChainMember(Params, SwapChainMember::SwapChain);
+    CreateSwapChainMember(Params, SwapChainMember::ImageViews);
+    CreateSwapChainMember(Params, SwapChainMember::RenderPass);
+    CreateSwapChainMember(Params, SwapChainMember::GraphicsPipeline);
+    CreateSwapChainMember(Params, SwapChainMember::FrameBuffer);
+    CreateSwapChainMember(Params, SwapChainMember::CommandBuffer);
 }
 
 void CSwapChain::Release()
 {
     m_LogicalDevice.WaitForDeviceIdle();
-    const VkDevice device = m_LogicalDevice.GetLogicalDevice();
-    m_CommandPool.Release(device);
-    ReleaseSwapChainDependants();
-    m_LogicalDevice.Release();
+    ReleaseSwapChainMember(SwapChainMember::CommandPool);
+    ReleaseSwapChainMember(SwapChainMember::FrameBuffer);
+    ReleaseSwapChainMember(SwapChainMember::GraphicsPipeline);
+    ReleaseSwapChainMember(SwapChainMember::RenderPass);
+    ReleaseSwapChainMember(SwapChainMember::ImageViews);
+    ReleaseSwapChainMember(SwapChainMember::SwapChain);
+    ReleaseSwapChainMember(SwapChainMember::LogicalDevice);
 }
 
 void CSwapChain::RecreateSwapChain(const CreateSwapChainParams& Params)
 {
-    vkDeviceWaitIdle(m_LogicalDevice.GetLogicalDevice());
-    const bool modifyCommandPool = false;
-    ReleaseSwapChainDependants();
-    CreateSwapChainDependants(Params);
+    WaitForValidFrameBufferSize(Params.m_Window, m_LogicalDevice.GetLogicalDevice());
+
+    m_LogicalDevice.RecreateSynchronizationObjectGroups();
+    ReleaseSwapChainMember(SwapChainMember::FrameBuffer);
+    ReleaseSwapChainMember(SwapChainMember::GraphicsPipeline);
+    ReleaseSwapChainMember(SwapChainMember::RenderPass);
+    ReleaseSwapChainMember(SwapChainMember::ImageViews);
+    ReleaseSwapChainMember(SwapChainMember::SwapChain);
+    CreateSwapChainMember(Params, SwapChainMember::SwapChain);
+    CreateSwapChainMember(Params, SwapChainMember::ImageViews);
+    CreateSwapChainMember(Params, SwapChainMember::RenderPass);
+    CreateSwapChainMember(Params, SwapChainMember::GraphicsPipeline);
+    CreateSwapChainMember(Params, SwapChainMember::FrameBuffer);
+    CreateSwapChainMember(Params, SwapChainMember::CommandBuffer);
 }
 
-void CSwapChain::DrawFrame()
+void CSwapChain::DrawFrame(const CreateSwapChainParams& Params)
 {
     const VkDevice device = m_LogicalDevice.GetLogicalDevice();
     const CSynchronizationObjectsGroup& synchronizationObjectGroup = m_LogicalDevice.GetSynchronizationObjectsGroup();
@@ -45,12 +62,14 @@ void CSwapChain::DrawFrame()
         VK_NULL_HANDLE,
         &imageIndex);
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR) 
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_RecreateSwapChain)
     {
-        RecreateSwapChain();
+        RecreateSwapChain(Params);
+        m_RecreateSwapChain = false;
         return;
     }
-    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) 
+    else if (result != VK_SUCCESS) 
     {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
@@ -109,88 +128,172 @@ void CSwapChain::DrawFrame()
     m_CurrentFrame = (m_CurrentFrame + 1) % synchronizationObjectGroup.GetMaxFramesInFlight();
 }
 
-void CSwapChain::ReleaseSwapChainDependants()
+void CSwapChain::RecreateSwapChainOnNextDrawCall()
 {
-    const VkDevice device = m_LogicalDevice.GetLogicalDevice();
-    m_FrameBuffer.Release(device);
-    m_GraphicsPipeline.Release(device);
-    m_RenderPass.Release(device);
-    m_ImageViews.Release(device);
-    vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
+    m_RecreateSwapChain = true;
 }
 
-void CSwapChain::CreateSwapChainDependants(const CreateSwapChainParams& Params)
+void CSwapChain::ReleaseSwapChainMember(const SwapChainMember member)
 {
-    const VkDevice device = m_LogicalDevice.GetLogicalDevice();
-    SwapChainSupportDetails swapChainSupport;
-    swapChainSupport.InitSwapChainSupportDetails(Params.m_PhysicalDevice.GetPhysicalDevice(), Params.m_Surface);
-    VkSurfaceFormatKHR surfaceFormat = swapChainSupport.GetOptimalSwapSurfaceFormat();
-    VkPresentModeKHR presentMode = swapChainSupport.GetOptimalSwapPresentMode();
-    VkExtent2D extent = swapChainSupport.GetOptimalSwapChainExtent(Params.m_Window, Params.m_Resolution);
-
-    const VkSurfaceCapabilitiesKHR& swapChainCapabilities = swapChainSupport.GetCapabilities();
-    engIntU32 imageCount = swapChainCapabilities.minImageCount + 1;
-    if (swapChainCapabilities.maxImageCount > 0 && imageCount > swapChainCapabilities.maxImageCount)
+    switch (member)
     {
-        imageCount = swapChainCapabilities.maxImageCount;
+    case CSwapChain::SwapChainMember::SwapChain:
+    {
+        vkDestroySwapchainKHR(m_LogicalDevice.GetLogicalDevice(), m_SwapChain, nullptr);
+        break;
+    }
+    case CSwapChain::SwapChainMember::ImageViews:
+    {
+        m_ImageViews.Release(m_LogicalDevice.GetLogicalDevice());
+        break;
+    }
+    case CSwapChain::SwapChainMember::RenderPass:
+    {
+        m_RenderPass.Release(m_LogicalDevice.GetLogicalDevice());
+        break;
+    }
+    case CSwapChain::SwapChainMember::GraphicsPipeline:
+    {
+        m_GraphicsPipeline.Release(m_LogicalDevice.GetLogicalDevice());
+        break;
+    }
+    case CSwapChain::SwapChainMember::FrameBuffer:
+    {
+        m_FrameBuffer.Release(m_LogicalDevice.GetLogicalDevice());
+        break;
+    }
+    case CSwapChain::SwapChainMember::LogicalDevice:
+    {
+        m_LogicalDevice.Release();
+        break;
+    }
+    case CSwapChain::SwapChainMember::CommandPool:
+    {
+        m_CommandPool.Release(m_LogicalDevice.GetLogicalDevice());
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void CSwapChain::CreateSwapChainMember(const CreateSwapChainParams& Params, const SwapChainMember member)
+{
+    switch (member)
+    {
+    case CSwapChain::SwapChainMember::SwapChain:
+    {
+        const VkDevice device = m_LogicalDevice.GetLogicalDevice();
+        SwapChainSupportDetails swapChainSupport;
+        swapChainSupport.InitSwapChainSupportDetails(Params.m_PhysicalDevice.GetPhysicalDevice(), Params.m_Surface);
+        VkSurfaceFormatKHR surfaceFormat = swapChainSupport.GetOptimalSwapSurfaceFormat();
+        VkPresentModeKHR presentMode = swapChainSupport.GetOptimalSwapPresentMode();
+        VkExtent2D extent = swapChainSupport.GetOptimalSwapChainExtent(Params.m_Window, Params.m_Resolution);
+
+        const VkSurfaceCapabilitiesKHR& swapChainCapabilities = swapChainSupport.GetCapabilities();
+        engIntU32 imageCount = swapChainCapabilities.minImageCount + 1;
+        if (swapChainCapabilities.maxImageCount > 0 && imageCount > swapChainCapabilities.maxImageCount)
+        {
+            imageCount = swapChainCapabilities.maxImageCount;
+        }
+
+        VkSwapchainCreateInfoKHR createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        createInfo.surface = Params.m_Surface;
+        createInfo.minImageCount = imageCount;
+        createInfo.imageFormat = surfaceFormat.format;
+        createInfo.imageColorSpace = surfaceFormat.colorSpace;
+        createInfo.imageExtent = extent;
+        createInfo.imageArrayLayers = 1;
+        createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+        const QueueFamilyIndices& indices = Params.m_QueueFamilyIndices;
+        uint32_t queueFamilyIndices[] = { indices.GetGraphicsFamily().value(), indices.GetPresentFamily().value() };
+
+        if (indices.GetGraphicsFamily() != indices.GetPresentFamily())
+        {
+            createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+            createInfo.queueFamilyIndexCount = 2;
+            createInfo.pQueueFamilyIndices = queueFamilyIndices;
+        }
+        else
+        {
+            createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+            createInfo.queueFamilyIndexCount = 0; // Optional
+            createInfo.pQueueFamilyIndices = nullptr; // Optional
+        }
+
+        createInfo.preTransform = swapChainCapabilities.currentTransform;
+        createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        createInfo.presentMode = presentMode;
+        createInfo.clipped = VK_TRUE;
+        createInfo.oldSwapchain = VK_NULL_HANDLE;
+
+        if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create swap chain!");
+        }
+
+        vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, nullptr);
+        m_SwapChainImages.resize(imageCount);
+        vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, m_SwapChainImages.data());
+
+        m_SwapChainImageFormat = surfaceFormat.format;
+        m_SwapChainExtent = extent;
+        break;
+    }
+    case CSwapChain::SwapChainMember::ImageViews:
+    {
+        CreateImageViewsParams createImageViewParams(m_SwapChainImages, m_SwapChainImageFormat, m_LogicalDevice.GetLogicalDevice());
+        m_ImageViews.CreateImageViews(createImageViewParams);
+        break;
+    }
+    case CSwapChain::SwapChainMember::RenderPass:
+    {
+        m_RenderPass.CreateRenderPass(m_SwapChainImageFormat, m_LogicalDevice.GetLogicalDevice());
+        break;
+    }
+    case CSwapChain::SwapChainMember::GraphicsPipeline:
+    {
+        CreateGraphicsPipelineParams createGraphicsPipelineParams(m_LogicalDevice.GetLogicalDevice(), m_SwapChainExtent, m_RenderPass.GetRenderPass());
+        m_GraphicsPipeline.CreateGraphicsPipeline(createGraphicsPipelineParams);
+        break;
+    }
+    case CSwapChain::SwapChainMember::FrameBuffer:
+    {
+        CCreateFrameBuffersParams createFrameBuffersParams(m_ImageViews.GetSwapChainImageViews(), m_RenderPass.GetRenderPass(), m_SwapChainExtent, m_LogicalDevice.GetLogicalDevice());
+        m_FrameBuffer.CreateFrameBuffers(createFrameBuffersParams);
+        break;
+    }
+    case CSwapChain::SwapChainMember::CommandBuffer:
+    {
+        CCreateCommandBufferParams createCommandBufferParams(m_CommandPool.GetCommandPool(), m_LogicalDevice.GetLogicalDevice(), m_RenderPass.GetRenderPass(), m_FrameBuffer.GetSwapChainFrameBuffers(), m_SwapChainExtent, m_GraphicsPipeline.GetGraphicsPipeline());
+        m_CommandBuffer.CreateCommandBuffers(createCommandBufferParams);
+        break;
+    }
+    case CSwapChain::SwapChainMember::LogicalDevice:
+    {
+        m_LogicalDevice.CreateLogicalDevice(Params.m_PhysicalDevice, Params.m_ValidationLayers);
+        break;
+    }
+    case CSwapChain::SwapChainMember::CommandPool:
+    {
+        m_CommandPool.CreateCommandPool(Params.m_QueueFamilyIndices.GetGraphicsFamily().value(), m_LogicalDevice.GetLogicalDevice());
+    }
+    default:
+        break;
+    }
+}
+
+void CSwapChain::WaitForValidFrameBufferSize(GLFWwindow* Window, const VkDevice& Device)
+{
+    int width = 0, height = 0;
+    glfwGetFramebufferSize(Window, &width, &height);
+    while (width == 0 || height == 0) 
+    {
+        glfwGetFramebufferSize(Window, &width, &height);
+        glfwWaitEvents();
     }
 
-    VkSwapchainCreateInfoKHR createInfo = {};
-    createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = Params.m_Surface;
-    createInfo.minImageCount = imageCount;
-    createInfo.imageFormat = surfaceFormat.format;
-    createInfo.imageColorSpace = surfaceFormat.colorSpace;
-    createInfo.imageExtent = extent;
-    createInfo.imageArrayLayers = 1;
-    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-    const QueueFamilyIndices& indices = Params.m_QueueFamilyIndices;
-    uint32_t queueFamilyIndices[] = { indices.GetGraphicsFamily().value(), indices.GetPresentFamily().value() };
-
-    if (indices.GetGraphicsFamily() != indices.GetPresentFamily())
-    {
-        createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-        createInfo.queueFamilyIndexCount = 2;
-        createInfo.pQueueFamilyIndices = queueFamilyIndices;
-    }
-    else
-    {
-        createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        createInfo.queueFamilyIndexCount = 0; // Optional
-        createInfo.pQueueFamilyIndices = nullptr; // Optional
-    }
-
-    createInfo.preTransform = swapChainCapabilities.currentTransform;
-    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    createInfo.presentMode = presentMode;
-    createInfo.clipped = VK_TRUE;
-    createInfo.oldSwapchain = VK_NULL_HANDLE;
-
-    if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create swap chain!");
-    }
-
-    vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, nullptr);
-    m_SwapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, m_SwapChainImages.data());
-
-    m_SwapChainImageFormat = surfaceFormat.format;
-    m_SwapChainExtent = extent;
-
-
-    CreateImageViewsParams createImageViewParams(m_SwapChainImages, m_SwapChainImageFormat, device);
-    m_ImageViews.CreateImageViews(createImageViewParams);
-
-    m_RenderPass.CreateRenderPass(m_SwapChainImageFormat, device);
-
-    CreateGraphicsPipelineParams createGraphicsPipelineParams(device, m_SwapChainExtent, m_RenderPass.GetRenderPass());
-    m_GraphicsPipeline.CreateGraphicsPipeline(createGraphicsPipelineParams);
-
-    CCreateFrameBuffersParams createFrameBuffersParams(m_ImageViews.GetSwapChainImageViews(), m_RenderPass.GetRenderPass(), m_SwapChainExtent, device);
-    m_FrameBuffer.CreateFrameBuffers(createFrameBuffersParams);
-
-    CCreateCommandBufferParams createCommandBufferParams(m_CommandPool.GetCommandPool(), device, m_RenderPass.GetRenderPass(), m_FrameBuffer.GetSwapChainFrameBuffers(), m_SwapChainExtent, m_GraphicsPipeline.GetGraphicsPipeline());
-    m_CommandBuffer.CreateCommandBuffers(createCommandBufferParams);
+    vkDeviceWaitIdle(Device);
 }

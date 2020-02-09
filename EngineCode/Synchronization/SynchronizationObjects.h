@@ -9,9 +9,10 @@ public:
 	const VkSemaphore& GetRenderFinishedSemaphore() const;
 	const VkFence& GetInFlightFence() const;
 	const VkFence& GetImageInFlightFence() const;
-	void SetImageInFlight(const VkFence& fence);
+	void SetImageInFlight(const VkFence& Fence);
 	void Release(const VkDevice& Device);
 	void SetImageInUse();
+	void RecreateSynchronizationObjects(const VkDevice& Device);
 private:
 	VkSemaphore m_ImageAvailableSemaphore;
 	VkSemaphore m_RenderFinishedSemaphore;
