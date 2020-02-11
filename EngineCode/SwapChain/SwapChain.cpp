@@ -29,8 +29,7 @@ void CSwapChain::Release()
 void CSwapChain::RecreateSwapChain(const CreateSwapChainParams& Params)
 {
     WaitForValidFrameBufferSize(Params.m_Window, m_LogicalDevice.GetLogicalDevice());
-
-    m_LogicalDevice.RecreateSynchronizationObjectGroups();
+    vkDeviceWaitIdle(m_LogicalDevice.GetLogicalDevice());
     ReleaseSwapChainMember(SwapChainMember::FrameBuffer);
     ReleaseSwapChainMember(SwapChainMember::GraphicsPipeline);
     ReleaseSwapChainMember(SwapChainMember::RenderPass);
@@ -63,13 +62,12 @@ void CSwapChain::DrawFrame(const CreateSwapChainParams& Params)
         &imageIndex);
 
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_RecreateSwapChain)
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
         RecreateSwapChain(Params);
-        m_RecreateSwapChain = false;
         return;
     }
-    else if (result != VK_SUCCESS) 
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
     {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
@@ -123,7 +121,16 @@ void CSwapChain::DrawFrame(const CreateSwapChainParams& Params)
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr; // Optional
 
-    vkQueuePresentKHR(m_LogicalDevice.GetPresentQueue(), &presentInfo);
+    result = vkQueuePresentKHR(m_LogicalDevice.GetPresentQueue(), &presentInfo);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_RecreateSwapChain) 
+    {
+        m_RecreateSwapChain = false;
+        RecreateSwapChain(Params);
+    }
+    else if (result != VK_SUCCESS) 
+    {
+        throw std::runtime_error("failed to present swap chain image!");
+    }
 
     m_CurrentFrame = (m_CurrentFrame + 1) % synchronizationObjectGroup.GetMaxFramesInFlight();
 }
@@ -294,6 +301,4 @@ void CSwapChain::WaitForValidFrameBufferSize(GLFWwindow* Window, const VkDevice&
         glfwGetFramebufferSize(Window, &width, &height);
         glfwWaitEvents();
     }
-
-    vkDeviceWaitIdle(Device);
 }

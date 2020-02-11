@@ -14,7 +14,6 @@ public:
 	const CSynchronizationObjectsGroup& GetSynchronizationObjectsGroup() const;
 	void SetImageInUse(const engIntU32 FrameIndex);
 	void WaitForDeviceIdle() const;
-	void RecreateSynchronizationObjectGroups();
 private:
 	VkDevice m_Device;
 	VkQueue m_GraphicsQueue;

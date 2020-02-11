@@ -88,8 +88,3 @@ void CLogicalDevice::WaitForDeviceIdle() const
 {
 	vkDeviceWaitIdle(m_Device);
 }
-
-void CLogicalDevice::RecreateSynchronizationObjectGroups()
-{
-	m_SynchronizationObjectGroup.RecreateSynchronizationObjectGroups(m_Device);
-}

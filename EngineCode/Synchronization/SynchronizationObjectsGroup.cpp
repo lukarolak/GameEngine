@@ -61,9 +61,3 @@ void CSynchronizationObjects::SetImageInUse()
 {
 	m_ImageInFlight = m_InFlightFence;
 }
-
-void CSynchronizationObjects::RecreateSynchronizationObjects(const VkDevice& Device)
-{
-	Release(Device);
-	CreateSynchronnizationObjects(Device);
-}

@@ -11,7 +11,6 @@ public:
 	const std::vector<CSynchronizationObjects>& GetSynchronizationObjectGroup() const;
 	const engIntU32 GetMaxFramesInFlight() const;
 	void SetImageInUse(const engIntU32 FrameIndex);
-	void RecreateSynchronizationObjectGroups(const VkDevice& Device);
 private:
 	std::vector<CSynchronizationObjects> m_SynchronizationObjectGroup;
 };

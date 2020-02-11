@@ -12,7 +12,6 @@ public:
 	void SetImageInFlight(const VkFence& Fence);
 	void Release(const VkDevice& Device);
 	void SetImageInUse();
-	void RecreateSynchronizationObjects(const VkDevice& Device);
 private:
 	VkSemaphore m_ImageAvailableSemaphore;
 	VkSemaphore m_RenderFinishedSemaphore;

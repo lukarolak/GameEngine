@@ -35,11 +35,3 @@ void CSynchronizationObjectsGroup::SetImageInUse(const engIntU32 FrameIndex)
 	ENG_ASSERT(FrameIndex <= m_SynchronizationObjectGroup.size(), "Frame index out of bounds");
 	m_SynchronizationObjectGroup[FrameIndex].SetImageInUse();
 }
-
-void CSynchronizationObjectsGroup::RecreateSynchronizationObjectGroups(const VkDevice& Device)
-{
-	for (CSynchronizationObjects& synchronizationObjectGroup : m_SynchronizationObjectGroup)
-	{
-		synchronizationObjectGroup.RecreateSynchronizationObjects(Device);
-	}
-}
