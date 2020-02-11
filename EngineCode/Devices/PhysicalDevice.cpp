@@ -55,6 +55,20 @@ const std::vector<const char*>& CPhysicalDevice::GetDeviceExtentions() const
 	return m_DeviceExtensions;
 }
 
+engIntU32 CPhysicalDevice::GetMemoryType(engIntU32 Filter, VkMemoryPropertyFlags Properties) const
+{
+	VkPhysicalDeviceMemoryProperties memProperties;
+	vkGetPhysicalDeviceMemoryProperties(m_PhysicalDevice, &memProperties);
+	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+	{
+		if ((Filter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & Properties) == Properties)
+		{
+			return i;
+		}
+	}
+	throw std::runtime_error("failed to find suitable memory type!");
+}
+
 bool CPhysicalDevice::IsDeviceSuitable(VkPhysicalDevice Device, const VkSurfaceKHR& Surface)
 {
 	QueueFamilyIndices indices;

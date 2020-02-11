@@ -1,6 +1,8 @@
 #include "GraphicsPipeline.h"
 #include <FileIO/FileIO.h>
 #include <stdexcept>
+#include <VertexBuffer/Vertex.h>
+#include <TypeDefs/TypeDefs.h>
 
 void CGraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParams& Params)
 {
@@ -26,8 +28,15 @@ void CGraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParam
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+    VkVertexInputBindingDescription bindingDescription = CVertex::GetBindingDescription();
+    std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = CVertex::GetAttributeDescriptions();
+
+    vertexInputInfo.vertexBindingDescriptionCount = 1;
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<engIntU32>(attributeDescriptions.size());
+
+    vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;

@@ -10,6 +10,7 @@ public:
 	const QueueFamilyIndices& GetQueueFamilyIndices() const;
 	VkPhysicalDevice GetPhysicalDevice() const;
 	const std::vector<const char*>& GetDeviceExtentions() const;
+	engIntU32 GetMemoryType(engIntU32 Filter, VkMemoryPropertyFlags Properties) const;
 private:
 	bool IsDeviceSuitable(VkPhysicalDevice Device, const VkSurfaceKHR& Surface);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice Device);

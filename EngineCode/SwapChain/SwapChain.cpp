@@ -17,6 +17,7 @@ void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
 void CSwapChain::Release()
 {
     m_LogicalDevice.WaitForDeviceIdle();
+    ReleaseSwapChainMember(SwapChainMember::CommandBuffer);
     ReleaseSwapChainMember(SwapChainMember::CommandPool);
     ReleaseSwapChainMember(SwapChainMember::FrameBuffer);
     ReleaseSwapChainMember(SwapChainMember::GraphicsPipeline);
@@ -179,6 +180,11 @@ void CSwapChain::ReleaseSwapChainMember(const SwapChainMember member)
         m_CommandPool.Release(m_LogicalDevice.GetLogicalDevice());
         break;
     }
+    case CSwapChain::SwapChainMember::CommandBuffer:
+    {
+        m_CommandBuffer.Release(m_LogicalDevice.GetLogicalDevice());
+        break;
+    }
     default:
         break;
     }
@@ -274,7 +280,7 @@ void CSwapChain::CreateSwapChainMember(const CreateSwapChainParams& Params, cons
     }
     case CSwapChain::SwapChainMember::CommandBuffer:
     {
-        CCreateCommandBufferParams createCommandBufferParams(m_CommandPool.GetCommandPool(), m_LogicalDevice.GetLogicalDevice(), m_RenderPass.GetRenderPass(), m_FrameBuffer.GetSwapChainFrameBuffers(), m_SwapChainExtent, m_GraphicsPipeline.GetGraphicsPipeline());
+        CCreateCommandBufferParams createCommandBufferParams(m_CommandPool.GetCommandPool(), m_LogicalDevice.GetLogicalDevice(), m_RenderPass.GetRenderPass(), m_FrameBuffer.GetSwapChainFrameBuffers(), m_SwapChainExtent, m_GraphicsPipeline.GetGraphicsPipeline(), Params.m_PhysicalDevice);
         m_CommandBuffer.CreateCommandBuffers(createCommandBufferParams);
         break;
     }
@@ -286,6 +292,7 @@ void CSwapChain::CreateSwapChainMember(const CreateSwapChainParams& Params, cons
     case CSwapChain::SwapChainMember::CommandPool:
     {
         m_CommandPool.CreateCommandPool(Params.m_QueueFamilyIndices.GetGraphicsFamily().value(), m_LogicalDevice.GetLogicalDevice());
+        break;
     }
     default:
         break;

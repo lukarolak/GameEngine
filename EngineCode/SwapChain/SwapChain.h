@@ -25,7 +25,7 @@ private:
 		FrameBuffer,
 		CommandBuffer,
 		LogicalDevice,
-		CommandPool
+		CommandPool,
 	};
 	void RecreateSwapChain(const CreateSwapChainParams& Params);
 	void ReleaseSwapChainMember(const SwapChainMember member);
