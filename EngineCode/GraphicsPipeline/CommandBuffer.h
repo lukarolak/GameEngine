@@ -2,7 +2,7 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 #include <GraphicsPipeline/Types/CreateCommandBufferParams.h>
-#include <VertexBuffer/VertexBuffer.h>
+#include <Buffers/VertexBuffer/VertexBuffer.h>
 class CCommandBuffer
 {
 public:

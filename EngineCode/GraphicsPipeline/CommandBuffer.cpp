@@ -3,7 +3,16 @@
 #include <TypeDefs/TypeDefs.h>
 void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Params)
 {
-	m_VertexBuffer.CreateVertexBuffer(Params.m_Device, Params.m_PhysicalDevice);
+	const VkDevice& device = Params.m_LogicalDevice.GetLogicalDevice();
+
+	std::vector<CVertex> vertices =
+	{ {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}} };
+	VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+	CopyBufferToBufferParams copyBufferToBufferParams(bufferSize, Params.m_CommandPool, Params.m_LogicalDevice);
+	CCreateVertexBufferParams createVertexBufferParams(vertices, device, Params.m_PhysicalDevice, copyBufferToBufferParams);
+	m_VertexBuffer.CreateVertexBuffer(createVertexBufferParams);
 	m_CommandBuffers.resize(Params.m_SwapChainFrameBuffers.size());
 
 	VkCommandBufferAllocateInfo allocInfo = {};
@@ -12,7 +21,7 @@ void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Para
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-	if (vkAllocateCommandBuffers(Params.m_Device, &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
+	if (vkAllocateCommandBuffers(device, &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
@@ -45,8 +54,8 @@ void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Para
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Params.m_GraphicsPipeline);
 
-		m_VertexBuffer.BindVertexBuffer(commandBuffer);
-		m_VertexBuffer.DrawVertexBuffer(commandBuffer);
+		m_VertexBuffer.BindBuffer(commandBuffer);
+		m_VertexBuffer.DrawBuffer(commandBuffer);
 
 		vkCmdEndRenderPass(commandBuffer);
 

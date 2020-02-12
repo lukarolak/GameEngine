@@ -31,6 +31,7 @@ void CSwapChain::RecreateSwapChain(const CreateSwapChainParams& Params)
 {
     WaitForValidFrameBufferSize(Params.m_Window, m_LogicalDevice.GetLogicalDevice());
     vkDeviceWaitIdle(m_LogicalDevice.GetLogicalDevice());
+    ReleaseSwapChainMember(SwapChainMember::CommandBuffer);
     ReleaseSwapChainMember(SwapChainMember::FrameBuffer);
     ReleaseSwapChainMember(SwapChainMember::GraphicsPipeline);
     ReleaseSwapChainMember(SwapChainMember::RenderPass);
@@ -280,7 +281,7 @@ void CSwapChain::CreateSwapChainMember(const CreateSwapChainParams& Params, cons
     }
     case CSwapChain::SwapChainMember::CommandBuffer:
     {
-        CCreateCommandBufferParams createCommandBufferParams(m_CommandPool.GetCommandPool(), m_LogicalDevice.GetLogicalDevice(), m_RenderPass.GetRenderPass(), m_FrameBuffer.GetSwapChainFrameBuffers(), m_SwapChainExtent, m_GraphicsPipeline.GetGraphicsPipeline(), Params.m_PhysicalDevice);
+        CCreateCommandBufferParams createCommandBufferParams(m_CommandPool.GetCommandPool(), m_LogicalDevice, m_RenderPass.GetRenderPass(), m_FrameBuffer.GetSwapChainFrameBuffers(), m_SwapChainExtent, m_GraphicsPipeline.GetGraphicsPipeline(), Params.m_PhysicalDevice);
         m_CommandBuffer.CreateCommandBuffers(createCommandBufferParams);
         break;
     }

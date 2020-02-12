@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/vec2.hpp>
-class CVertexBuffer
+class CBuffer
 {
 public:
 

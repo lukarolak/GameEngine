@@ -1,7 +1,7 @@
 #include "GraphicsPipeline.h"
 #include <FileIO/FileIO.h>
 #include <stdexcept>
-#include <VertexBuffer/Vertex.h>
+#include <Vertex/Vertex.h>
 #include <TypeDefs/TypeDefs.h>
 
 void CGraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParams& Params)

@@ -1,4 +1,4 @@
-#include <VertexBuffer/Vertex.h>
+#include <Vertex/Vertex.h>
 
 CVertex::CVertex(const engVector2& Position, const engVector3& Color)
 	: m_Position(Position), m_Color(Color)
