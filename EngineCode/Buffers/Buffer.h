@@ -9,11 +9,11 @@ class CBuffer
 public:
 	virtual ~CBuffer();
 	VkBuffer& GetBuffer();
-	void BindBuffer(const VkCommandBuffer& CommandBuffer);
-	void DrawBuffer(const VkCommandBuffer& CommandBuffer);
+	virtual void BindBuffer(const VkCommandBuffer& CommandBuffer);
+	virtual void DrawBuffer(const VkCommandBuffer& CommandBuffer);
 protected:
 	void CreateBuffer(const CCreateBufferParams& Params);
-	void CopyDataToBuffer(const VkDevice& Device, void* data);
+	void CopyDataToBuffer(const VkDevice& Device, const void* data);
 	void CopyBufferToBuffer(CBuffer& SourceBuffer, const CopyBufferToBufferParams& Params);
 	void Release(const VkDevice& Device);
 private:

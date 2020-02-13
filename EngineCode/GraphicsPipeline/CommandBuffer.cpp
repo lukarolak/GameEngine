@@ -5,15 +5,25 @@ void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Para
 {
 	const VkDevice& device = Params.m_LogicalDevice.GetLogicalDevice();
 
-	std::vector<CVertex> vertices =
-	{ {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-	{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-	{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}} };
+	std::vector<CVertex> vertices = {
+	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+	};
+	std::vector<uint16_t> indices = {
+	0, 1, 2, 2, 3, 0
+	};
+
 	VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+
 	CopyBufferToBufferParams copyBufferToBufferParams(bufferSize, Params.m_CommandPool, Params.m_LogicalDevice);
 	CCreateVertexBufferParams createVertexBufferParams(vertices, device, Params.m_PhysicalDevice, copyBufferToBufferParams);
 	m_VertexBuffer.CreateVertexBuffer(createVertexBufferParams);
 	m_CommandBuffers.resize(Params.m_SwapChainFrameBuffers.size());
+
+	CCreateIndexBufferParams createIndexBufferParams(indices, Params.m_LogicalDevice, Params.m_PhysicalDevice, Params.m_CommandPool);
+	m_IndexBuffer.CreateIndexBuffer(createIndexBufferParams);
 
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -55,7 +65,9 @@ void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Para
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Params.m_GraphicsPipeline);
 
 		m_VertexBuffer.BindBuffer(commandBuffer);
-		m_VertexBuffer.DrawBuffer(commandBuffer);
+		m_IndexBuffer.BindBuffer(commandBuffer);
+		
+		m_IndexBuffer.DrawBuffer(commandBuffer);
 
 		vkCmdEndRenderPass(commandBuffer);
 
@@ -74,4 +86,5 @@ const std::vector<VkCommandBuffer>& CCommandBuffer::GetCommandBuffers() const
 void CCommandBuffer::Release(const VkDevice& Device)
 {
 	m_VertexBuffer.Release(Device);
+	m_IndexBuffer.Release(Device);
 }

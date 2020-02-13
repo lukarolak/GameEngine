@@ -31,7 +31,7 @@ void CBuffer::CreateBuffer(const CCreateBufferParams& Params)
 	vkBindBufferMemory(Params.m_LogicalDevice, m_Buffer, m_BufferMemory, 0);
 }
 
-void CBuffer::CopyDataToBuffer(const VkDevice& Device, void* data)
+void CBuffer::CopyDataToBuffer(const VkDevice& Device, const void* data)
 {
 	void* mappedMemory;
 	vkMapMemory(Device, m_BufferMemory, 0, BufferSize, 0, &mappedMemory);
