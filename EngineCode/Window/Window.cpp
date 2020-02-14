@@ -41,7 +41,7 @@ void EngWindow::Release()
 	glfwDestroyWindow(m_Window);
 }
 
-void EngWindow::OnFrameBufferResizeCallback(GLFWwindow* Window, int Width, int Height)
+void EngWindow::OnFrameBufferResizeCallback(GLFWwindow* Window, int, int)
 {
 	CInstance* instance = reinterpret_cast<CInstance*>(glfwGetWindowUserPointer(Window));
 	instance->RecreateSwapChainOnNextDrawCall();

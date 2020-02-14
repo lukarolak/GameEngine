@@ -30,7 +30,7 @@ private:
 	void RecreateSwapChain(const CreateSwapChainParams& Params);
 	void ReleaseSwapChainMember(const SwapChainMember member);
 	void CreateSwapChainMember(const CreateSwapChainParams& Params,const SwapChainMember member);
-	void WaitForValidFrameBufferSize(GLFWwindow* Window, const VkDevice& Device);
+	void WaitForValidFrameBufferSize(GLFWwindow* Window);
 private:
 	VkSwapchainKHR m_SwapChain;
 	std::vector<VkImage> m_SwapChainImages;

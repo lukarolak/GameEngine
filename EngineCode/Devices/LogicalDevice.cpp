@@ -42,10 +42,9 @@ void CLogicalDevice::CreateLogicalDevice(const CPhysicalDevice& PhysicalDevice, 
 		createInfo.enabledLayerCount = 0;
 	}
 
-	if (vkCreateDevice(PhysicalDevice.GetPhysicalDevice(), &createInfo, nullptr, &m_Device) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create logical device!");
-	}
+	VkResult result;
+	result = vkCreateDevice(PhysicalDevice.GetPhysicalDevice(), &createInfo, nullptr, &m_Device);
+	ENG_ASSERT(result == VK_SUCCESS, "failed to create logical device!");
 
 	vkGetDeviceQueue(m_Device, indices.GetGraphicsFamily().value(), 0, &m_GraphicsQueue);
 	vkGetDeviceQueue(m_Device, indices.GetPresentFamily().value(), 0, &m_PresentQueue);

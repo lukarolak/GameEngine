@@ -1,5 +1,6 @@
-#include "RenderPass.h"
+#include <GraphicsPipeline/RenderPass.h>
 #include <stdexcept>
+#include <Debuging/Assert.h>
 void CRenderPass::CreateRenderPass(const VkFormat& SwapChainImageFormat, const VkDevice& LogicalDevice)
 {
     VkAttachmentDescription colorAttachment = {};
@@ -28,10 +29,9 @@ void CRenderPass::CreateRenderPass(const VkFormat& SwapChainImageFormat, const V
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
 
-    if (vkCreateRenderPass(LogicalDevice, &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create render pass!");
-    }
+    VkResult result;
+    result = vkCreateRenderPass(LogicalDevice, &renderPassInfo, nullptr, &m_RenderPass);
+    ENG_ASSERT(result == VK_SUCCESS, "failed to create render pass!");
 }
 
 void CRenderPass::Release(const VkDevice& LogicalDevice)

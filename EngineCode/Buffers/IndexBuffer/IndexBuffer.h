@@ -18,7 +18,8 @@ private:
 template<typename DataType>
 inline void CIndexBuffer::CreateIndexBuffer(const CCreateIndexBufferParams<DataType>& Params)
 {
-    if (sizeof(DataType) > sizeof(uint16_t))
+    const bool usingUINT32 = sizeof(DataType) > sizeof(engIntU16);
+    if (usingUINT32)
     {
         m_IndexType = VkIndexType::VK_INDEX_TYPE_UINT32;
     }
@@ -29,7 +30,7 @@ inline void CIndexBuffer::CreateIndexBuffer(const CCreateIndexBufferParams<DataT
 
     const VkDevice& device = Params.m_LogicalDevice.GetLogicalDevice();
 
-    m_BufferSize = sizeof(Params.m_Data[0]) * Params.m_Data.size();
+    m_BufferSize = static_cast<engIntU32>(sizeof(Params.m_Data[0]) * Params.m_Data.size());
 
     CStagingBuffer stagingBuffer;
     stagingBuffer.CreateStagingBuffer(Params.m_Data, device, Params.m_PhysicalDevice);

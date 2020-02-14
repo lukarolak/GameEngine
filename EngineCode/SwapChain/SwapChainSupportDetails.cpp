@@ -60,7 +60,7 @@ VkPresentModeKHR SwapChainSupportDetails::GetOptimalSwapPresentMode()
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D SwapChainSupportDetails::GetOptimalSwapChainExtent(GLFWwindow* Window, const WindowResolution& Resolution)
+VkExtent2D SwapChainSupportDetails::GetOptimalSwapChainExtent(GLFWwindow* Window)
 {
 	if (m_Capabilities.currentExtent.width != UINT32_MAX) 
 	{

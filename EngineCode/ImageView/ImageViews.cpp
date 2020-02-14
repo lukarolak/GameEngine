@@ -1,7 +1,7 @@
 #include <ImageView/ImageViews.h>
 #include <TypeDefs/TypeDefs.h>
 #include <stdexcept>
-
+#include <Debuging/Assert.h>
 void CImageViews::CreateImageViews(const CreateImageViewsParams& Params)
 {
 	m_SwapChainImageViews.resize(Params.m_Images.size());
@@ -26,10 +26,9 @@ void CImageViews::CreateImageViews(const CreateImageViewsParams& Params)
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		if (vkCreateImageView(Params.m_LogicalDevice, &createInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to create image views!");
-		}
+		VkResult result;
+		result = vkCreateImageView(Params.m_LogicalDevice, &createInfo, nullptr, &m_SwapChainImageViews[i]);
+		ENG_ASSERT(result == VK_SUCCESS, "failed to create image views!");
 	}
 }
 

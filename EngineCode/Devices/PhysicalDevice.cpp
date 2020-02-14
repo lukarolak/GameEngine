@@ -5,16 +5,14 @@
 #include <Queues/QueueFamilyIndices.h>
 #include <set>
 #include <SwapChain/SwapChainSupportDetails.h>
+#include <Debuging/Assert.h>
 
 void CPhysicalDevice::PickPhysicalDevice(VkInstance Instance, const VkSurfaceKHR& Surface)
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(Instance, &deviceCount, nullptr);
 
-	if (deviceCount == 0)
-	{
-		throw std::runtime_error("failed to find GPUs with Vulkan support!");
-	}
+	ENG_ASSERT(deviceCount != 0, "failed to find GPUs with Vulkan support!");
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(Instance, &deviceCount, devices.data());
@@ -31,11 +29,7 @@ void CPhysicalDevice::PickPhysicalDevice(VkInstance Instance, const VkSurfaceKHR
 		}
 	}
 
-	if (m_PhysicalDevice == VK_NULL_HANDLE) 
-	{
-
-		throw std::runtime_error("failed to find a suitable GPU!");
-	}
+	ENG_ASSERT(m_PhysicalDevice != VK_NULL_HANDLE, "failed to find a suitable GPU!");
 
 	m_QueueFamilyIndices.InitQueueFamilyIndices(m_PhysicalDevice, Surface);
 }
@@ -66,7 +60,8 @@ engIntU32 CPhysicalDevice::GetMemoryType(engIntU32 Filter, VkMemoryPropertyFlags
 			return i;
 		}
 	}
-	throw std::runtime_error("failed to find suitable memory type!");
+	ENG_ASSERT(false, "failed to find suitable memory type!");
+	return 0;
 }
 
 bool CPhysicalDevice::IsDeviceSuitable(VkPhysicalDevice Device, const VkSurfaceKHR& Surface)

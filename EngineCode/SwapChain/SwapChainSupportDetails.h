@@ -10,7 +10,7 @@ public:
     bool IsSwapChainAdequate();
     VkSurfaceFormatKHR GetOptimalSwapSurfaceFormat();
     VkPresentModeKHR GetOptimalSwapPresentMode();
-    VkExtent2D GetOptimalSwapChainExtent(GLFWwindow* Window, const WindowResolution& Resolution);
+    VkExtent2D SwapChainSupportDetails::GetOptimalSwapChainExtent(GLFWwindow* Window);
     const VkSurfaceCapabilitiesKHR& GetCapabilities();
 private:
     VkSurfaceCapabilitiesKHR m_Capabilities;

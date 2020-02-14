@@ -11,7 +11,7 @@ public:
 		const VkDevice& Device);
 
 public:
-	const const std::vector<VkImageView>& m_ImageViews;
+	const std::vector<VkImageView>& m_ImageViews;
 	const VkRenderPass& m_RenderPass;
 	const VkExtent2D& m_SwapChainExtent;
 	const VkDevice& m_Device;

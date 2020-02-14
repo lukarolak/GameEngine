@@ -1,6 +1,7 @@
 #include <Synchronization/SynchronizationObjects.h>
 #include <Debuging/Assert.h>
-#include "SynchronizationObjects.h"
+#include <Synchronization/SynchronizationObjectsGroup.h>
+#include <Debuging/Assert.h>
 void CSynchronizationObjects::CreateSynchronnizationObjects(const VkDevice& Device)
 {
 	VkSemaphoreCreateInfo semaphoreInfo = {};
@@ -14,10 +15,7 @@ void CSynchronizationObjects::CreateSynchronnizationObjects(const VkDevice& Devi
 	VkResult cratedRenderFinishedSemaphore = vkCreateSemaphore(Device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore);
 	VkResult createdInFlightFence = vkCreateFence(Device, &fenceInfo, nullptr, &m_InFlightFence);
 
-	if (cratedImageAvailabeSemaphore != VK_SUCCESS || cratedRenderFinishedSemaphore != VK_SUCCESS || createdInFlightFence != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create synchronization objects for a frame!");
-	}
+	ENG_ASSERT(cratedImageAvailabeSemaphore == VK_SUCCESS && cratedRenderFinishedSemaphore == VK_SUCCESS && createdInFlightFence == VK_SUCCESS, "failed to create synchronization objects for a frame!");
 
 	m_SynchronizationObjectsCreated = true;
 }

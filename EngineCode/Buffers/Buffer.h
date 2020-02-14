@@ -17,7 +17,7 @@ protected:
 	void CopyBufferToBuffer(CBuffer& SourceBuffer, const CopyBufferToBufferParams& Params);
 	void Release(const VkDevice& Device);
 private:
-	engIntU32 BufferSize;
+	engIntU32 m_BufferSize;
 	VkBuffer m_Buffer;
 	VkDeviceMemory m_BufferMemory;
 	bool m_BufferReleased = false;

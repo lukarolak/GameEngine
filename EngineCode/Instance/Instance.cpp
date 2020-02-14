@@ -3,6 +3,8 @@
 #include <vector>
 #include <iostream>
 #include <Debuging/Validation.h>
+#include <Debuging/Assert.h>
+
 VkInstance CInstance::GetInstance() const
 {
     return m_Instance;
@@ -10,10 +12,7 @@ VkInstance CInstance::GetInstance() const
 
 void CInstance::CreateInstance(const EngWindow& Window)
 {
-    if (m_Validation.GetValidationLayersEnabled() && m_Validation.CheckValidationLayerSupport() == false)
-    {
-        throw std::runtime_error("validation layers requested, but not available!");
-    }
+    ENG_ASSERT(m_Validation.GetValidationLayersEnabled() && m_Validation.CheckValidationLayerSupport(), "validation layers requested, but not available!");
 
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -47,15 +46,14 @@ void CInstance::CreateInstance(const EngWindow& Window)
         createInfo.pNext = nullptr;
     }
 
-    if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS) 
-    {
-        throw std::runtime_error("failed to create instance!");
-    }
+    VkResult result;
+    result = vkCreateInstance(&createInfo, nullptr, &m_Instance);
+    ENG_ASSERT(result == VK_SUCCESS, "failed to create instance!");
 
     m_Validation.SetupDebugMessenger(m_Instance);
     m_surface.CreateSurface(Window.GetWindow(), m_Instance);
     m_PhysicalDevice.PickPhysicalDevice(m_Instance, m_surface.GetSurface());
-    CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetResolution(), Window.GetWindow(), m_Validation);
+    CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetWindow(), m_Validation);
     m_SwapChain.CreateSwapChain(swapChainParams);
 }
 
@@ -79,7 +77,7 @@ const CPhysicalDevice& CInstance::GetPhysicalDevice() const
 
 void CInstance::DrawFrame(const EngWindow& Window)
 {
-    CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetResolution(), Window.GetWindow(), m_Validation);
+    CreateSwapChainParams swapChainParams(m_PhysicalDevice, m_PhysicalDevice.GetQueueFamilyIndices(), m_surface.GetSurface(), Window.GetWindow(), m_Validation);
     m_SwapChain.DrawFrame(swapChainParams);
 }
 

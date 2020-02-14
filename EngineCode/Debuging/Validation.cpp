@@ -2,7 +2,7 @@
 #include <vulkan/vulkan_core.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-
+#include <Debuging/Assert.h>
 void CValidation::SetupDebugMessenger(const VkInstance instance)
 {
     if (GetValidationLayersEnabled() == false)
@@ -13,10 +13,9 @@ void CValidation::SetupDebugMessenger(const VkInstance instance)
     VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
     populateDebugMessengerCreateInfo(createInfo);
 
-    if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS) 
-    {
-        throw std::runtime_error("failed to set up debug messenger!");
-    }
+    VkResult result;
+    result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &m_DebugMessenger);
+    ENG_ASSERT(result == VK_SUCCESS, "failed to set up debug messenger!");
 }
 
 bool CValidation::CheckValidationLayerSupport()
@@ -87,7 +86,7 @@ void CValidation::Release(const VkInstance instance)
     }
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL CValidation::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+VKAPI_ATTR VkBool32 VKAPI_CALL CValidation::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void*)
 {
     std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 

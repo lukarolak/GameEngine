@@ -1,6 +1,7 @@
 #include <GraphicsPipeline/CommandBuffer.h>
 #include <stdexcept>
 #include <TypeDefs/TypeDefs.h>
+#include <Debuging/Assert.h>
 void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Params)
 {
 	const VkDevice& device = Params.m_LogicalDevice.GetLogicalDevice();
@@ -11,7 +12,7 @@ void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Para
 	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
 	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 	};
-	std::vector<uint16_t> indices = {
+	std::vector<engIntU16> indices = {
 	0, 1, 2, 2, 3, 0
 	};
 
@@ -31,10 +32,9 @@ void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Para
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-	if (vkAllocateCommandBuffers(device, &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate command buffers!");
-	}
+	VkResult result;
+	result = vkAllocateCommandBuffers(device, &allocInfo, m_CommandBuffers.data());
+	ENG_ASSERT(result == VK_SUCCESS, "failed to allocate command buffers!");
 
 	for (engIntU32 i = 0; i < m_CommandBuffers.size(); i++) 
 	{
@@ -45,10 +45,8 @@ void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Para
 		beginInfo.flags = 0; // Optional
 		beginInfo.pInheritanceInfo = nullptr; // Optional
 
-		if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to begin recording command buffer!");
-		}
+		result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		ENG_ASSERT(result == VK_SUCCESS, "failed to begin recording command buffer!");
 
 		VkRenderPassBeginInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -71,10 +69,8 @@ void CCommandBuffer::CreateCommandBuffers(const CCreateCommandBufferParams& Para
 
 		vkCmdEndRenderPass(commandBuffer);
 
-		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to record command buffer!");
-		}
+		result = vkEndCommandBuffer(commandBuffer);
+		ENG_ASSERT(result == VK_SUCCESS, "failed to record command buffer!");
 	}
 }
 

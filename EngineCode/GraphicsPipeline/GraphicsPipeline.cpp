@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <Vertex/Vertex.h>
 #include <TypeDefs/TypeDefs.h>
+#include <Debuging/Assert.h>
 
 void CGraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParams& Params)
 {
@@ -97,10 +98,9 @@ void CGraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParam
     pipelineLayoutInfo.setLayoutCount = 0;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
 
-    if (vkCreatePipelineLayout(Params.m_LogicalDevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create pipeline layout!");
-    }
+    VkResult result;
+    result = vkCreatePipelineLayout(Params.m_LogicalDevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout);
+    ENG_ASSERT(result == VK_SUCCESS, "failed to create pipeline layout!");
 
     VkGraphicsPipelineCreateInfo pipelineInfo = {};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -120,10 +120,8 @@ void CGraphicsPipeline::CreateGraphicsPipeline(const CreateGraphicsPipelineParam
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
     pipelineInfo.basePipelineIndex = -1; // Optional
 
-    if (vkCreateGraphicsPipelines(Params.m_LogicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create graphics pipeline!");
-    }
+    result = vkCreateGraphicsPipelines(Params.m_LogicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline);
+    ENG_ASSERT(result == VK_SUCCESS, "failed to create graphics pipeline!");
 
     vkDestroyShaderModule(Params.m_LogicalDevice, fragShaderModule, nullptr);
     vkDestroyShaderModule(Params.m_LogicalDevice, vertShaderModule, nullptr);
@@ -148,10 +146,9 @@ VkShaderModule CGraphicsPipeline::CreateShaderModule(const std::vector<char>& co
 	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
 	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(LogicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create shader module!");
-	}
+    VkResult result;
+    result = vkCreateShaderModule(LogicalDevice, &createInfo, nullptr, &shaderModule);
+    ENG_ASSERT(result == VK_SUCCESS, "failed to create shader module!");
 
 	return shaderModule;
 }

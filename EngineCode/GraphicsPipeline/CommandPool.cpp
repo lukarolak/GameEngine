@@ -8,10 +8,9 @@ void CCommandPool::CreateCommandPool(const engIntU32& GraphicsFamily, const VkDe
 	poolInfo.queueFamilyIndex = GraphicsFamily;
 	poolInfo.flags = 0; // Optional
 
-	if (vkCreateCommandPool(LogicalDevice, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create command pool!");
-	}
+	VkResult result;
+	result = vkCreateCommandPool(LogicalDevice, &poolInfo, nullptr, &commandPool);
+	ENG_ASSERT(result == VK_SUCCESS, "failed to create command pool!");
 }
 
 void CCommandPool::Release(const VkDevice& Device)

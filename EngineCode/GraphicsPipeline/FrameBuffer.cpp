@@ -1,6 +1,7 @@
 #include <GraphicsPipeline/FrameBuffer.h>
 #include <stdexcept>
 #include <TypeDefs/TypeDefs.h>
+#include <Debuging/Assert.h>
 void CFrameBuffer::CreateFrameBuffers(const CCreateFrameBuffersParams& Params)
 {
     swapChainFramebuffers.resize(Params.m_ImageViews.size());
@@ -22,10 +23,10 @@ void CFrameBuffer::CreateFrameBuffers(const CCreateFrameBuffersParams& Params)
         framebufferInfo.height = m_SwapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(Params.m_Device, &framebufferInfo, nullptr, &swapChainFramebuffers[swapChainFrameBufferCounter]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create framebuffer!");
-        }
+        VkResult result;
+        result = vkCreateFramebuffer(Params.m_Device, &framebufferInfo, nullptr, &swapChainFramebuffers[swapChainFrameBufferCounter]);
+        ENG_ASSERT(result == VK_SUCCESS, "failed to create framebuffer!");
+
         swapChainFrameBufferCounter++;
     }
    

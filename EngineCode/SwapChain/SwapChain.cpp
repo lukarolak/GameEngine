@@ -2,6 +2,8 @@
 #include <SwapChain/SwapChainSupportDetails.h>
 #include <Queues/QueueFamilyIndices.h>
 #include <stdexcept>
+#include <Debuging/Assert.h>
+
 void CSwapChain::CreateSwapChain(const CreateSwapChainParams& Params)
 {
     CreateSwapChainMember(Params, SwapChainMember::LogicalDevice);
@@ -29,7 +31,7 @@ void CSwapChain::Release()
 
 void CSwapChain::RecreateSwapChain(const CreateSwapChainParams& Params)
 {
-    WaitForValidFrameBufferSize(Params.m_Window, m_LogicalDevice.GetLogicalDevice());
+    WaitForValidFrameBufferSize(Params.m_Window);
     vkDeviceWaitIdle(m_LogicalDevice.GetLogicalDevice());
     ReleaseSwapChainMember(SwapChainMember::CommandBuffer);
     ReleaseSwapChainMember(SwapChainMember::FrameBuffer);
@@ -69,10 +71,7 @@ void CSwapChain::DrawFrame(const CreateSwapChainParams& Params)
         RecreateSwapChain(Params);
         return;
     }
-    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-    {
-        throw std::runtime_error("failed to acquire swap chain image!");
-    }
+    ENG_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR, "failed to acquire swap chain image!");
 
     // Check if a previous frame is using this image (i.e. there is its fence to wait on)
     if (synchronizationObjectsForThisFrame.GetImageInFlightFence() != VK_NULL_HANDLE)
@@ -99,10 +98,8 @@ void CSwapChain::DrawFrame(const CreateSwapChainParams& Params)
 
     vkResetFences(device, 1, &synchronizationObjectsForThisFrame.GetInFlightFence());
 
-    if (vkQueueSubmit(m_LogicalDevice.GetGraphicsQueue(), 1, &submitInfo, synchronizationObjectsForThisFrame.GetInFlightFence()) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to submit draw command buffer!");
-    }
+    result = vkQueueSubmit(m_LogicalDevice.GetGraphicsQueue(), 1, &submitInfo, synchronizationObjectsForThisFrame.GetInFlightFence());
+    ENG_ASSERT(result == VK_SUCCESS, "failed to submit draw command buffer!");
 
     VkSubpassDependency dependency = {};
     dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -129,9 +126,9 @@ void CSwapChain::DrawFrame(const CreateSwapChainParams& Params)
         m_RecreateSwapChain = false;
         RecreateSwapChain(Params);
     }
-    else if (result != VK_SUCCESS) 
+    else
     {
-        throw std::runtime_error("failed to present swap chain image!");
+        ENG_ASSERT(result == VK_SUCCESS, "failed to present swap chain image!");
     }
 
     m_CurrentFrame = (m_CurrentFrame + 1) % synchronizationObjectGroup.GetMaxFramesInFlight();
@@ -202,7 +199,7 @@ void CSwapChain::CreateSwapChainMember(const CreateSwapChainParams& Params, cons
         swapChainSupport.InitSwapChainSupportDetails(Params.m_PhysicalDevice.GetPhysicalDevice(), Params.m_Surface);
         VkSurfaceFormatKHR surfaceFormat = swapChainSupport.GetOptimalSwapSurfaceFormat();
         VkPresentModeKHR presentMode = swapChainSupport.GetOptimalSwapPresentMode();
-        VkExtent2D extent = swapChainSupport.GetOptimalSwapChainExtent(Params.m_Window, Params.m_Resolution);
+        VkExtent2D extent = swapChainSupport.GetOptimalSwapChainExtent(Params.m_Window);
 
         const VkSurfaceCapabilitiesKHR& swapChainCapabilities = swapChainSupport.GetCapabilities();
         engIntU32 imageCount = swapChainCapabilities.minImageCount + 1;
@@ -243,10 +240,9 @@ void CSwapChain::CreateSwapChainMember(const CreateSwapChainParams& Params, cons
         createInfo.clipped = VK_TRUE;
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create swap chain!");
-        }
+        VkResult result;
+        result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_SwapChain);
+        ENG_ASSERT(result == VK_SUCCESS, "failed to create swap chain!");
 
         vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, nullptr);
         m_SwapChainImages.resize(imageCount);
@@ -300,7 +296,7 @@ void CSwapChain::CreateSwapChainMember(const CreateSwapChainParams& Params, cons
     }
 }
 
-void CSwapChain::WaitForValidFrameBufferSize(GLFWwindow* Window, const VkDevice& Device)
+void CSwapChain::WaitForValidFrameBufferSize(GLFWwindow* Window)
 {
     int width = 0, height = 0;
     glfwGetFramebufferSize(Window, &width, &height);
