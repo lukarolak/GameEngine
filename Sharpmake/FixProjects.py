@@ -18,3 +18,5 @@ generatedProjectFile.close()
 generatedProjectFile = open(GemeratedProjectFilePath,"w")
 generatedProjectFile.write(manualyCreatedProjectData+itemGroups)
 generatedProjectFile.close()
+
+print("Finished fixing project")
